@@ -1,4 +1,4 @@
 notebook
 ========
 
-Collection of IPython notebooks for demonstrating software.
+This repository contains a collection of IPython notebooks that can be used for demonstrating our software.
