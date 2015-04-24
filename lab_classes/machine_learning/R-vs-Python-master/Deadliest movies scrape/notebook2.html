@@ -1,0 +1,192 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <meta http-equiv="Content-Style-Type" content="text/css" />
+  <meta name="generator" content="pandoc" />
+  <title></title>
+  <style type="text/css">code{white-space: pre;}</style>
+  <style type="text/css">
+table.sourceCode, tr.sourceCode, td.lineNumbers, td.sourceCode {
+  margin: 0; padding: 0; vertical-align: baseline; border: none; }
+table.sourceCode { width: 100%; line-height: 100%; }
+td.lineNumbers { text-align: right; padding-right: 4px; padding-left: 4px; color: #aaaaaa; border-right: 1px solid #aaaaaa; }
+td.sourceCode { padding-left: 5px; }
+code > span.kw { color: #007020; font-weight: bold; }
+code > span.dt { color: #902000; }
+code > span.dv { color: #40a070; }
+code > span.bn { color: #40a070; }
+code > span.fl { color: #40a070; }
+code > span.ch { color: #4070a0; }
+code > span.st { color: #4070a0; }
+code > span.co { color: #60a0b0; font-style: italic; }
+code > span.ot { color: #007020; }
+code > span.al { color: #ff0000; font-weight: bold; }
+code > span.fu { color: #06287e; }
+code > span.er { color: #ff0000; font-weight: bold; }
+  </style>
+  <link rel="stylesheet" href="custom.css" type="text/css" />
+</head>
+<body>
+<p><strong>Document title:</strong> R vs Python - Round 2 (2/2)</p>
+<p><strong>Date:</strong> February 2, 2014</p>
+<p><strong>Text by:</strong> Simon Garnier (<a href="http://www.theswarmlab.com">www.theswarmlab.com</a> / <a href="http://twitter.com/sjmgarnier">@sjmgarnier</a>)</p>
+<p><strong>R code by:</strong> Simon Garnier (<a href="http://www.theswarmlab.com">www.theswarmlab.com</a> / <a href="http://twitter.com/sjmgarnier">@sjmgarnier</a>)</p>
+<p><strong>Python code by:</strong> Randy Olson (<a href="http://www.randalolson.com">www.randalolson.com</a> / <a href="http://twitter.com/randal_olson">@randal_olson</a>)</p>
+<p>Document generated with RStudio (<a href="http://www.rstudio.com">www.rstudio.com</a>), knitr (<a href="http://yihui.name/knitr/">www.yihui.name/knitr/</a>) and pandoc (<a href="http://johnmacfarlane.net/pandoc/">www.johnmacfarlane.net/pandoc/</a>). Python figures generated with iPython Notebook (<a href="http://ipython.org/notebook.html">www.ipython.org/notebook.html</a>).</p>
+<hr />
+<h4 id="foreword">Foreword</h4>
+<p>My friend Randy Olson and I got into the habit to argue about the relative qualities of our favorite languages for data analysis and visualization. I am an enthusiastic R user (<a href="http://www.r-project.org">www.r-project.org</a>) while Randy is a fan of Python (<a href="http://www.python.org">www.python.org</a>). One thing we agree on however is that our discussions are meaningless unless we actually put R and Python to a series of tests to showcase their relative strengths and weaknesses. Essentially we will set a common goal (<em>e.g.</em>, perform a particular type of data analysis or draw a particular type of graph) and create the R and Python codes to achieve this goal. And since Randy and I are all about sharing, open source and open access, we decided to make public the results of our friendly challenges so that you can help us decide between R and Python and, hopefully, also learn something along the way.</p>
+<hr />
+<h4 id="todays-challenge-a-data-thief-manual-for-honest-scientists-part-2-of-2">Today’s challenge: a data thief manual for honest scientists (Part 2 of 2)</h4>
+<h5 id="introduction">1 - Introduction</h5>
+<p><a href="http://www.theswarmlab.com/r-vs-python-round-2/">Last time</a> we showed you how to scrape data from <a href="http://www.moviebodycounts.com">www.MovieBodyCounts.com</a>. Today, we will finish what we started by retrieving additional information from <a href="http://www.imdb.com">www.imdb.com</a>. In particular, we will attempt to recover the following pieces of information for each of the movies we collected last time: MPAA rating, genre(s), director(s), duration in minutes, IMDb rating and full cast. We will detail the different steps of the process and provide for each step the corresponding code (red boxes for R, green boxes for Python). You will also find the entire codes at the end of this document.</p>
+<p>If you think there’s a better way to code this in either language, leave a pull request on our <a href="https://github.com/morpionZ/R-vs-Python/tree/master/Deadliest%20movies%20scrape/code">GitHub repository</a> or leave a note with suggestions in the comments below.</p>
+<h5 id="step-by-step-process">2 - Step by step process</h5>
+<p>First things first, let’s set up our working environment by loading some necessary libraries.</p>
+<pre class="sourceCode r"><code class="sourceCode r"><span class="co"># Load libraries</span>
+<span class="co"># No additional libraries needed here. Yeah!</span></code></pre>
+<pre class="sourceCode python"><code class="sourceCode python"><span class="co"># String parsing libraries</span>
+<span class="ch">from</span> imdb <span class="ch">import</span> IMDb
+<span class="ch">import</span> pandas <span class="ch">as</span> pd
+<span class="ch">import</span> re</code></pre>
+<p>Randy is lucky today. Someone else has already written a package (<a href="http://imdbpy.sourceforge.net/">‘IMDbPY’</a>) to scrape data from IMDb. Unfortunately for me, R users are too busy working with serious data sets to take the time to write such a package for my favorite data processing language. <a href="http://had.co.nz/">Hadley Wickham</a> has included a <a href="http://had.co.nz/data/movies/">‘movie’ data set</a> in the <a href="http://ggplot2.org/">ggplot2</a> package that contains some of the information stored on IMDb, but some of the pieces we need for today’s challenge are missing.</p>
+<p>Since I am not easily discouraged, I decided to write my own IMDb scraping function (see below). It is not as sophisticated as the Python package Randy is using today, but it does the job until someone else decides to write a more complete R/IMDb package. As you will see, I am using the same scraping technique (XPath) as the one I used in the first part of the challenge.</p>
+<pre class="sourceCode r"><code class="sourceCode r"><span class="co"># Create IMDB scraper</span>
+IMDb &lt;-<span class="st"> </span>function(ID) {
+  <span class="co"># Retrieve movie info from IMDb.com. </span>
+  <span class="co">#</span>
+  <span class="co"># Args:</span>
+  <span class="co">#   ID: IDs of the movies.</span>
+  <span class="co">#</span>
+  <span class="co"># Returns:</span>
+  <span class="co">#   A data frame containing one line per movie, and nine columns: movie ID,</span>
+  <span class="co">#   film title, year of release, duration in minutes, MPAA rating, genre(s),</span>
+  <span class="co">#   director(s), IMDb rating, and full cast.</span>
+  
+  <span class="co"># Load required libraries</span>
+  <span class="kw">require</span>(XML)
+  <span class="kw">require</span>(pbapply)    <span class="co"># Apply functions with progress bars!!!</span>
+  
+  <span class="co"># Wrap core of the function in do.call and pblapply in order to</span>
+  <span class="co"># pseudo-vectorize it (pblapply) and return a data frame (do.call)</span>
+  info &lt;-<span class="st"> </span><span class="kw">do.call</span>(rbind, <span class="kw">pblapply</span>(ID, <span class="dt">FUN =</span> function(ID) {
+    <span class="co"># Create movie URL on IMDb.com</span>
+    URL &lt;-<span class="st"> </span><span class="kw">paste0</span>(<span class="st">&quot;http://www.imdb.com/title/tt&quot;</span>, ID)
+    
+    <span class="co"># Download and parse HTML of IMDb page</span>
+    parsed.html &lt;-<span class="st"> </span><span class="kw">htmlParse</span>(URL)
+    
+    <span class="co"># Find title</span>
+    Film &lt;-<span class="st"> </span><span class="kw">xpathSApply</span>(parsed.html, <span class="st">&quot;//h1[@class=&#39;header&#39;]/span[@class=&#39;itemprop&#39;]&quot;</span>, xmlValue)
+    
+    <span class="co"># Find year</span>
+    Year &lt;-<span class="st"> </span><span class="kw">as.numeric</span>(<span class="kw">gsub</span>(<span class="st">&quot;[^0-9]&quot;</span>, <span class="st">&quot;&quot;</span>, <span class="kw">xpathSApply</span>(parsed.html, <span class="st">&quot;//h1[@class=&#39;header&#39;]/span[@class=&#39;nobr&#39;]&quot;</span>, xmlValue)))
+    
+    <span class="co"># Find duration in minutes</span>
+    Length_Minutes &lt;-<span class="st"> </span><span class="kw">as.numeric</span>(<span class="kw">gsub</span>(<span class="st">&quot;[^0-9]&quot;</span>, <span class="st">&quot;&quot;</span>, <span class="kw">xpathSApply</span>(parsed.html, <span class="st">&quot;//div[@class=&#39;infobar&#39;]/time[@itemprop=&#39;duration&#39;]&quot;</span>, xmlValue)))
+    
+    <span class="co"># Find MPAA rating</span>
+    MPAA_Rating &lt;-<span class="st"> </span><span class="kw">unname</span>(<span class="kw">xpathSApply</span>(parsed.html, <span class="st">&quot;//div[@class=&#39;infobar&#39;]/span/@content&quot;</span>))
+    if (!<span class="kw">is.character</span>(MPAA_Rating)) {   <span class="co"># Some movies don&#39;t have a MPAA rating</span>
+      MPAA_Rating &lt;-<span class="st"> &quot;UNRATED&quot;</span>
+    }
+    
+    <span class="co"># Find genre</span>
+    Genre &lt;-<span class="st"> </span><span class="kw">paste</span>(<span class="kw">xpathSApply</span>(parsed.html, <span class="st">&quot;//span[@class=&#39;itemprop&#39; and @itemprop=&#39;genre&#39;]&quot;</span>, xmlValue), <span class="dt">collapse=</span><span class="st">&#39;|&#39;</span>)
+    
+    <span class="co"># Find director</span>
+    Director &lt;-<span class="st"> </span><span class="kw">paste</span>(<span class="kw">xpathSApply</span>(parsed.html, <span class="st">&quot;//div[@itemprop=&#39;director&#39;]/a&quot;</span>, xmlValue), <span class="dt">collapse=</span><span class="st">&#39;|&#39;</span>)
+    
+    <span class="co"># Find IMDB rating</span>
+    IMDB_rating &lt;-<span class="st"> </span><span class="kw">as.numeric</span>(<span class="kw">xpathSApply</span>(parsed.html, <span class="st">&quot;//div[@class=&#39;titlePageSprite star-box-giga-star&#39;]&quot;</span>, xmlValue))
+    
+    <span class="co"># Extract full cast from the full credits page</span>
+    parsed.html &lt;-<span class="st"> </span><span class="kw">htmlParse</span>(<span class="kw">paste0</span>(URL,<span class="st">&quot;/fullcredits&quot;</span>))
+    Full_Cast &lt;-<span class="st"> </span><span class="kw">paste</span>(<span class="kw">xpathSApply</span>(parsed.html, <span class="st">&quot;//span[@itemprop=&#39;name&#39;]&quot;</span>, xmlValue), <span class="dt">collapse=</span><span class="st">&#39;|&#39;</span>)
+    
+    <span class="kw">data.frame</span>(<span class="dt">ID =</span> ID, <span class="dt">Film =</span> Film, <span class="dt">Year =</span> Year, <span class="dt">Length_Minutes =</span> Length_Minutes,
+               <span class="dt">MPAA_Rating =</span> MPAA_Rating, <span class="dt">Genre =</span> Genre, 
+               <span class="dt">Director =</span> Director, <span class="dt">IMDB_rating =</span> IMDB_rating, <span class="dt">Full_Cast =</span> Full_Cast)<span class="er">)</span>
+  }))
+}</code></pre>
+<pre class="sourceCode python"><code class="sourceCode python">imdb_access = IMDb()</code></pre>
+<p>Randy and I now have a working IMDb scraper. We can start collecting and organizing the data that we need.</p>
+<p>First, let’s load the data we collected last time.</p>
+<pre class="sourceCode r"><code class="sourceCode r"><span class="co"># Load data from last challenge </span>
+data &lt;-<span class="st"> </span><span class="kw">read.csv</span>(<span class="st">&quot;movies-R.csv&quot;</span>)</code></pre>
+<pre class="sourceCode python"><code class="sourceCode python">movie_data = pd.read_csv(<span class="st">&quot;movies.csv&quot;</span>)</code></pre>
+<p>Then, we will extract the movie IMDb ID from the IMDb URL we collected last week. It’s easy, it’s the only number in the URL.</p>
+<pre class="sourceCode r"><code class="sourceCode r"><span class="co"># For each movie, extract IMDb info and append it to the data</span>
+data &lt;-<span class="st"> </span><span class="kw">within</span>(data, {
+  <span class="co"># Extract ID number</span>
+  IMDB_ID &lt;-<span class="st"> </span><span class="kw">gsub</span>(<span class="st">&quot;[^0-9]&quot;</span>, <span class="st">&quot;&quot;</span>, IMDB_URL)</code></pre>
+<pre class="sourceCode python"><code class="sourceCode python"><span class="co"># Grab only the movie number out of the IMDB URL</span>
+movie_data[<span class="st">&quot;Movie_Number&quot;</span>] = movie_data[<span class="st">&quot;IMDB_URL&quot;</span>].<span class="dt">apply</span>(<span class="kw">lambda</span> x: re.sub(<span class="st">&quot;[^0-9]&quot;</span>, <span class="st">&quot;&quot;</span>, x))</code></pre>
+<p>Now that this is done, we will simply let the IMDb scraper collect the data we want and we will append it to the data from the first part of the challenge.</p>
+<pre class="sourceCode r"><code class="sourceCode r">  <span class="co"># Download IMDb info into a temporary variable</span>
+  IMDB_Info &lt;-<span class="st"> </span><span class="kw">IMDb</span>(IMDB_ID)
+  
+  <span class="co"># Save MPAA rating</span>
+  MPAA_Rating &lt;-<span class="st"> </span>IMDB_Info$MPAA_Rating
+  
+  <span class="co"># Save genre(s)</span>
+  Genre &lt;-<span class="st"> </span>IMDB_Info$Genre
+  
+  <span class="co"># Save director(s)</span>
+  Director &lt;-<span class="st"> </span>IMDB_Info$Director
+  
+  <span class="co"># Save duration in minutes</span>
+  Length_Minutes &lt;-<span class="st"> </span>IMDB_Info$Length_Minutes
+  
+  <span class="co"># Save IMDb rating</span>
+  IMDB_rating &lt;-<span class="st"> </span>IMDB_Info$IMDB_rating
+  
+  <span class="co"># Save full cast</span>
+  Full_Cast &lt;-<span class="st"> </span>IMDB_Info$Full_Cast
+  
+  <span class="co"># Delete IMDb info</span>
+  IMDB_Info &lt;-<span class="st"> </span><span class="ot">NULL</span>
+<span class="er">})</span></code></pre>
+<pre class="sourceCode python"><code class="sourceCode python"><span class="kw">with</span> <span class="dt">open</span>(<span class="st">&quot;film-death-counts-Python.csv&quot;</span>, <span class="st">&quot;wb&quot;</span>) <span class="ch">as</span> out_file:
+    out_file.write(<span class="st">&quot;Film,Year,Body_Count,MPAA_Rating,Genre,Director,Actors,Length_Minutes,IMDB_Rating</span><span class="ch">\n</span><span class="st">&quot;</span>)
+
+    <span class="kw">for</span> movie_entry in movie_data.iterrows():
+        <span class="co"># Use a try-catch on the loop to prevent temporary connection-related issues from stopping the scrape</span>
+        <span class="kw">try</span>:
+            movie = imdb_access.get_movie(movie_entry[<span class="dv">1</span>][<span class="st">&quot;Movie_Number&quot;</span>])
+            movie_fields = []
+            
+            <span class="co"># Remove non-ASCII character encodings and commas from movie titles</span>
+            movie_fields.append(movie[<span class="st">&quot;title&quot;</span>].encode(<span class="st">&quot;ascii&quot;</span>, <span class="st">&quot;replace&quot;</span>).replace(<span class="st">&quot;,&quot;</span>, <span class="st">&quot;&quot;</span>))
+            movie_fields.append(<span class="dt">str</span>(movie[<span class="st">&quot;year&quot;</span>]))
+            movie_fields.append(<span class="dt">str</span>(movie_entry[<span class="dv">1</span>][<span class="st">&quot;Body_Count&quot;</span>]))
+            
+            <span class="co"># Some movies don&#39;t have MPAA Ratings on IMDB</span>
+            <span class="kw">try</span>:
+              movie_fields.append(<span class="dt">str</span>(movie[<span class="st">&quot;mpaa&quot;</span>].split(<span class="st">&quot; &quot;</span>)[<span class="dv">1</span>]))
+            <span class="kw">except</span>:
+              movie_fields.append(<span class="st">&quot;&quot;</span>)
+            
+            <span class="co"># For movies with multiple genres/directors/actors, join them with bars |</span>
+            movie_fields.append(<span class="dt">str</span>(<span class="st">&quot;|&quot;</span>.join(movie[<span class="st">&quot;genres&quot;</span>])))
+            movie_fields.append(<span class="dt">str</span>(<span class="st">&quot;|&quot;</span>.join([<span class="dt">str</span>(x) <span class="kw">for</span> x in movie[<span class="st">&quot;director&quot;</span>]])))
+            movie_fields.append(<span class="dt">str</span>(<span class="st">&quot;|&quot;</span>.join([<span class="dt">str</span>(x) <span class="kw">for</span> x in movie[<span class="st">&quot;cast&quot;</span>]])))
+            
+            movie_fields.append(<span class="dt">str</span>(<span class="dt">int</span>(movie[<span class="st">&quot;runtime&quot;</span>][<span class="dv">0</span>].split(<span class="st">&quot;:&quot;</span>)[-<span class="dv">1</span>])))
+            movie_fields.append(<span class="dt">str</span>(<span class="dt">float</span>(movie[<span class="st">&quot;rating&quot;</span>])))</code></pre>
+<p>And finally, all what is left to do is to save the complete data set into a .csv file and close the script.</p>
+<pre class="sourceCode r"><code class="sourceCode r"><span class="kw">write.csv</span>(data, <span class="dt">file =</span> <span class="st">&quot;movies-R-full.csv&quot;</span>)</code></pre>
+<pre class="sourceCode python"><code class="sourceCode python"><span class="co"># All entries are comma-delimited</span>
+            out_file.write(<span class="st">&quot;,&quot;</span>.join(movie_fields) + <span class="st">&quot;</span><span class="ch">\n</span><span class="st">&quot;</span>)
+            
+        <span class="kw">except</span> <span class="ot">Exception</span> <span class="ch">as</span> e:
+            <span class="dt">print</span> <span class="st">&quot;Error with&quot;</span>, <span class="dt">str</span>(movie)</code></pre>
+<p>That’s it! You should now have a .csv file somewhere on your computer containing all the information we just scraped in both parts of this challenge.</p>
+<p>Sorry it took us so long to complete this part, but beginnings of semesters are always very busy times at the university.</p>
+<p>Stay tuned for our next challenge! It will be about making a linear regression, running basic diagnostic tests and plotting the resulting straight line with its confidence interval.</p>
+<hr />
+<h4 id="source-code">3 - Source code</h4>
+<p>R and Python source codes are available <a href="https://github.com/morpionZ/R-vs-Python/tree/master/Deadliest%20movies%20scrape/code">here</a>.</p>
+</body>
+</html>

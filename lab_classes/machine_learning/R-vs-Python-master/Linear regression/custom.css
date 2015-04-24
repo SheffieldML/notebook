@@ -1,0 +1,127 @@
+body {
+        font: 14px/1.5em "HelveticaNeue", "Helvetica Neue", Helvetica, Arial, sans-serif;
+		    color: #777;
+		-webkit-font-smoothing: antialiased; /* Fix for webkit rendering */
+		-webkit-text-size-adjust: 100%;
+        /*font-family: "Avenir Next", Helvetica, Arial, sans-serif;*/
+        padding:1em;
+        margin:auto;
+        max-width:10in;
+}
+
+h1, h2, h3, h4, h5, h6 {
+
+		font-weight: normal; }
+	h1 a, h2 a, h3 a, h4 a, h5 a, h6 a { font-weight: inherit; }
+	h1 { font-size: 46px; line-height: 50px; margin-bottom: 14px;}
+	h2 { font-size: 35px; line-height: 40px; margin-bottom: 10px; }
+	h3 { font-size: 28px; line-height: 34px; margin-bottom: 8px; }
+	h4 { font-size: 21px; line-height: 30px; margin-bottom: 4px; }
+	h5 { font-size: 17px; line-height: 24px; }
+	h6 { font-size: 14px; line-height: 21px; }
+	.subheader { color: #777; }
+
+	p { margin: 0 0 20px 0; }
+	p img { margin: 0; }
+	p.lead { font-size: 21px; line-height: 27px; color: #444;  }
+
+	em { font-style: italic; }
+	strong { font-weight: bold;  }
+	small { font-size: 80%; }
+
+hr {
+        height: 0.2em;
+        border: 0;
+        color: #CCCCCC;
+        background-color: #CCCCCC;
+}
+
+p, blockquote, ul, ol, dl, li, table, pre {
+        margin: 15px 0;
+        text-align: justify;
+}
+
+a, a:visited { color: #333; text-decoration: underline; outline: 0; }
+  a:hover, a:focus { color: #000; }
+	p a, p a:visited { line-height: inherit; }
+
+#message {
+        border-radius: 6px;
+        border: 1px solid #ccc;
+        display:block;
+        width:100%;
+        height:60px;
+        margin:6px 0px;
+}
+
+button, #ws {
+        font-size: 10pt;
+        padding: 4px 6px;
+        border-radius: 5px;
+        border: 1px solid #bbb;
+        background-color: #eee;
+}
+
+code, pre, #ws, #message {
+        font-family: Monaco;
+        font-size: 8pt;
+        border-radius: 3px;
+        background-color: #F8F8F8;
+        color: inherit;
+}
+
+code {
+        border: 1px solid #EAEAEA;
+        margin: 0 2px;
+        padding: 0 5px;
+}
+
+pre.r {
+  border: 2px solid #8A0606;
+}
+
+pre.r:before {
+  content: 'R code \A';
+  color: #8A0606;
+  font-weight: bold;
+}
+
+pre.python {
+  border: 2px solid #068A06;
+}
+
+pre.python:before {
+  content: 'Python code \A';
+  color: #068A06;
+  font-weight: bold;
+}
+
+img {
+    max-width: 100%;
+    height: auto;
+    width: auto\9; /* ie8 */
+}
+
+pre {
+        border: 1px solid #CCCCCC;
+        overflow: auto;
+        padding: 4px 8px;
+}
+
+pre > code {
+        border: 0;
+        margin: 0;
+        padding: 0;
+}
+
+blockquote, blockquote p { font-size: 12px; line-height: 24px; color: #000; font-style: italic; }
+	blockquote { margin: 0 0 20px; padding: 9px 50px 0 49px; border-left: 1px solid #ddd; }
+	blockquote cite { display: block; font-size: 12px; color: #555; }
+	blockquote cite:before { content: "\2014 \0020"; }
+	blockquote cite a, blockquote cite a:visited, blockquote cite a:visited { color: #555; }
+
+#ws { background-color: #f8f8f8; }
+
+.send { color:#77bb77; }
+.server { color:#7799bb; }
+.error { color:#AA0000; }

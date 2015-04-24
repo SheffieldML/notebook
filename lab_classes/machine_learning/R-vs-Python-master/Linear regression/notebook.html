@@ -1,0 +1,316 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <meta http-equiv="Content-Style-Type" content="text/css" />
+  <meta name="generator" content="pandoc" />
+  <title></title>
+  <style type="text/css">code{white-space: pre;}</style>
+  <style type="text/css">
+table.sourceCode, tr.sourceCode, td.lineNumbers, td.sourceCode {
+  margin: 0; padding: 0; vertical-align: baseline; border: none; }
+table.sourceCode { width: 100%; line-height: 100%; }
+td.lineNumbers { text-align: right; padding-right: 4px; padding-left: 4px; color: #aaaaaa; border-right: 1px solid #aaaaaa; }
+td.sourceCode { padding-left: 5px; }
+code > span.kw { color: #007020; font-weight: bold; }
+code > span.dt { color: #902000; }
+code > span.dv { color: #40a070; }
+code > span.bn { color: #40a070; }
+code > span.fl { color: #40a070; }
+code > span.ch { color: #4070a0; }
+code > span.st { color: #4070a0; }
+code > span.co { color: #60a0b0; font-style: italic; }
+code > span.ot { color: #007020; }
+code > span.al { color: #ff0000; font-weight: bold; }
+code > span.fu { color: #06287e; }
+code > span.er { color: #ff0000; font-weight: bold; }
+  </style>
+  <link rel="stylesheet" href="custom.css" type="text/css" />
+</head>
+<body>
+<p><strong>Document title:</strong> R vs Python - Round 3</p>
+<p><strong>Date:</strong> February 5, 2014</p>
+<p><strong>Text by:</strong> Simon Garnier (<a href="http://www.theswarmlab.com">www.theswarmlab.com</a> / <a href="http://twitter.com/sjmgarnier">@sjmgarnier</a>)</p>
+<p><strong>R code by:</strong> Simon Garnier (<a href="http://www.theswarmlab.com">www.theswarmlab.com</a> / <a href="http://twitter.com/sjmgarnier">@sjmgarnier</a>)</p>
+<p><strong>Python code by:</strong> Randy Olson (<a href="http://www.randalolson.com">www.randalolson.com</a> / <a href="http://twitter.com/randal_olson">@randal_olson</a>)</p>
+<p>Document generated with RStudio (<a href="http://www.rstudio.com">www.rstudio.com</a>), knitr (<a href="http://yihui.name/knitr/">www.yihui.name/knitr/</a>) and pandoc (<a href="http://johnmacfarlane.net/pandoc/">www.johnmacfarlane.net/pandoc/</a>). Python figures generated with iPython Notebook (<a href="http://ipython.org/notebook.html">www.ipython.org/notebook.html</a>).</p>
+<hr />
+<h4 id="foreword">Foreword</h4>
+<p>My friend Randy Olson and I got into the habit to argue about the relative qualities of our favorite languages for data analysis and visualization. I am an enthusiastic R user (<a href="http://www.r-project.org">www.r-project.org</a>) while Randy is a fan of Python (<a href="http://www.python.org">www.python.org</a>). One thing we agree on however is that our discussions are meaningless unless we actually put R and Python to a series of tests to showcase their relative strengths and weaknesses. Essentially we will set a common goal (<em>e.g.</em>, perform a particular type of data analysis or draw a particular type of graph) and create the R and Python codes to achieve this goal. And since Randy and I are all about sharing, open source and open access, we decided to make public the results of our friendly challenges so that you can help us decide between R and Python and, hopefully, also learn something along the way.</p>
+<hr />
+<h4 id="todays-challenge-walk-the-line">Today’s challenge: walk the line</h4>
+<h5 id="introduction">1 - Introduction</h5>
+<p>Linear regression is one of the most popular statistical tools, in particular when it comes to detect and measure the strength of trends in time-series (but not only). Today we will show you how to perform a linear regression in R and Python, how to run basic diagnostic tests to make sure the linear regression went well, and how to nicely plot the final result.</p>
+<p>The data we will use today are provided by <a href="http://www.quandl.com/">Quandl</a>. Quandl is a company that collects and organizes time-series datasets from hundred’s of public sources, and can even host your datasets for free. It is like the YouTube of time-series data. Besides having a huge collection of datasets, the nice thing about Quandl is that it provides packages for <a href="http://www.quandl.com/help/packages/r">R</a> and <a href="http://www.quandl.com/help/packages/python">Python</a> (and <a href="http://www.quandl.com/help/packages">other languages as well</a>) that make it very easy - one line of code! - to retrieve time-series datasets directly from your favorite data analysis tool. Yeah Quandl!</p>
+<p>The dataset that we will explore contains information about the average contributions of individuals and corporations to the income taxes, expressed as a fraction of the <a href="http://en.wikipedia.org/wiki/Gross_domestic_product">Gross Domestic Produce (GDP)</a>. We will use linear regression to estimate the variation of these contributions from 1945 to 2013.</p>
+<p>In the following, we will detail the different steps of the process and provide for each step the corresponding code (red boxes for R, green boxes for Python). You will also find the entire codes at the end of this document.</p>
+<p>If you think there’s a better way to code this in either language, leave a pull request on our <a href="https://github.com/morpionZ/R-vs-Python/tree/master/Deadliest%20movies%20scrape/code">GitHub repository</a> or leave a note with suggestions in the comments below.</p>
+<h5 id="step-by-step-process">2 - Step by step process</h5>
+<p>First things first, let’s set up our working environment by loading some necessary libraries.</p>
+<pre class="sourceCode r"><code class="sourceCode r"><span class="co"># Load libraries</span>
+<span class="kw">require</span>(<span class="st">&quot;Quandl&quot;</span>)         <span class="co"># Functions to access Quandl&#39;s database</span>
+<span class="kw">require</span>(<span class="st">&quot;lattice&quot;</span>)        <span class="co"># Base graph functions</span>
+<span class="kw">require</span>(<span class="st">&quot;latticeExtra&quot;</span>)   <span class="co"># Layer graph functions</span></code></pre>
+<pre class="sourceCode python"><code class="sourceCode python"><span class="ch">import</span> Quandl</code></pre>
+<p>Now, let’s load the dataset from Quandl. You can find it on Quandl’s website <a href="http://www.quandl.com/TPC/HIST_RECEIPT-Historical-Source-of-Revenue-as-Share-of-GDP">here</a>. Among other things, this dataset contains the contributions of individuals and corporations to the income taxes, expressed as a fraction of the GDP. Its original source is the <a href="http://www.taxpolicycenter.org/">Tax Policy Center</a>. The dataset code at Quandl is “TPC/HIST_RECEIPT” and we will retrieve data from December 31, 1945, to December 31, 2013.</p>
+<pre class="sourceCode r"><code class="sourceCode r"><span class="co"># Load data from Quandl</span>
+my.data &lt;-<span class="st"> </span><span class="kw">Quandl</span>(<span class="st">&quot;TPC/HIST_RECEIPT&quot;</span>, 
+                  <span class="dt">start_date =</span> <span class="st">&quot;1945-12-31&quot;</span>, 
+                  <span class="dt">end_date =</span> <span class="st">&quot;2013-12-31&quot;</span>)
+
+<span class="co"># Display first lines of the data frame</span>
+<span class="kw">head</span>(my.data)</code></pre>
+<pre class="sourceCode python"><code class="sourceCode python">quandl_data = Quandl.get(<span class="st">&quot;TPC/HIST_RECEIPT&quot;</span>,
+                         trim_start=<span class="st">&quot;1945-12-31&quot;</span>,
+                         trim_end=<span class="st">&quot;2013-12-31&quot;</span>)
+
+quandl_data.head()</code></pre>
+<p>The column names from Quandl’s data frame contain spaces. We need to correct that before we can proceed with the rest of the analysis.</p>
+<pre class="sourceCode r"><code class="sourceCode r"><span class="co"># The columns&#39; names contain spaces, make them syntactically valid</span>
+<span class="kw">names</span>(my.data) &lt;-<span class="st"> </span><span class="kw">make.names</span>(<span class="kw">names</span>(my.data))</code></pre>
+<pre class="sourceCode python"><code class="sourceCode python">%matplotlib inline
+<span class="ch">import</span> matplotlib.pyplot <span class="ch">as</span> plt
+
+<span class="co"># Rename the columns we&#39;re using with underscores -- required for the linear regression</span>
+quandl_data[<span class="st">&quot;Individual_Income_Taxes&quot;</span>] = quandl_data[<span class="st">&quot;Individual Income Taxes&quot;</span>]
+quandl_data[<span class="st">&quot;Corporation_Income_Taxes&quot;</span>] = quandl_data[<span class="st">&quot;Corporation Income Taxes&quot;</span>]
+quandl_data[<span class="st">&quot;Fiscal_Year&quot;</span>] = <span class="dt">range</span>(<span class="dt">len</span>(quandl_data.index))</code></pre>
+<p>The dataset contains three columns of interest for us: individuals’ and corporations’ income taxes as a fraction of the GDP, and fiscal year. We will first plot the individuals’ and corporations’ income taxes as a function of the fiscal year to see what the data look like.</p>
+<pre class="sourceCode r"><code class="sourceCode r"><span class="co"># Create graph object</span>
+graph &lt;-<span class="st"> </span><span class="kw">xyplot</span>(Individual.Income.Taxes ~<span class="st"> </span>Fiscal.Year, 
+                <span class="dt">data =</span> my.data,
+                <span class="dt">type =</span> <span class="kw">c</span>(<span class="st">&quot;g&quot;</span>, <span class="st">&quot;b&quot;</span>),
+                <span class="dt">col =</span> <span class="st">&quot;#00526D&quot;</span>)
+
+graph &lt;-<span class="st"> </span>graph +<span class="st"> </span><span class="kw">xyplot</span>(Corporation.Income.Taxes ~<span class="st"> </span>Fiscal.Year, 
+                        <span class="dt">data =</span> my.data,
+                        <span class="dt">type =</span> <span class="kw">c</span>(<span class="st">&quot;b&quot;</span>),
+                        <span class="dt">col =</span> <span class="st">&quot;#AD3333&quot;</span>)
+
+<span class="co"># Create pretty theme, because who doesn&#39;t like a nice looking graph :-)</span>
+my.theme &lt;-<span class="st"> </span><span class="kw">within</span>(<span class="kw">trellis.par.get</span>(), {           
+  plot.line &lt;-<span class="st"> </span><span class="kw">within</span>(plot.line, {
+    lwd &lt;-<span class="st"> </span><span class="dv">3</span>
+  })
+  
+  axis.text &lt;-<span class="st"> </span><span class="kw">within</span>(axis.text, {
+    cex &lt;-<span class="st"> </span><span class="fl">1.25</span>
+  })
+  
+  par.xlab.text &lt;-<span class="st"> </span><span class="kw">within</span>(par.xlab.text, {
+    cex &lt;-<span class="st"> </span><span class="fl">1.5</span>
+  })
+  
+  par.ylab.text &lt;-<span class="st"> </span><span class="kw">within</span>(par.ylab.text, {
+    cex &lt;-<span class="st"> </span><span class="fl">1.5</span>
+  })
+  
+  add.text &lt;-<span class="st"> </span><span class="kw">within</span>(add.text, {
+    cex &lt;-<span class="st"> </span><span class="fl">1.25</span>
+  })
+  
+  superpose.line &lt;-<span class="st"> </span><span class="kw">within</span>(superpose.line, {
+    col &lt;-<span class="st"> </span><span class="kw">c</span>(<span class="st">&quot;#00526D&quot;</span>, <span class="st">&quot;#AD3333&quot;</span>)
+    lwd &lt;-<span class="st"> </span><span class="dv">3</span>
+  })
+})
+
+<span class="co"># Compute upper and lower limits of the y axes</span>
+max.val &lt;-<span class="st"> </span><span class="kw">max</span>(my.data$Corporation.Income.Taxes, my.data$Individual.Income.Taxes)
+ylim &lt;-<span class="st"> </span><span class="kw">c</span>(<span class="dv">0</span> -<span class="st"> </span><span class="fl">0.05</span> *<span class="st"> </span>max.val, max.val *<span class="st"> </span><span class="fl">1.15</span>)
+
+<span class="co"># Prepare a legend</span>
+key &lt;-<span class="st"> </span><span class="kw">within</span>(<span class="kw">list</span>(), {
+  text &lt;-<span class="st"> </span><span class="kw">c</span>(<span class="st">&quot;Individuals&quot;</span>, <span class="st">&quot;Corporations&quot;</span>)
+  corner &lt;-<span class="st"> </span><span class="kw">c</span>(<span class="fl">0.05</span>, .<span class="dv">95</span>)
+  lines &lt;-<span class="st"> </span><span class="ot">TRUE</span>
+  points =<span class="st"> </span><span class="ot">FALSE</span>
+})
+
+<span class="co"># Update graph object </span>
+graph &lt;-<span class="st"> </span><span class="kw">update</span>(graph, 
+                <span class="dt">xlab =</span> <span class="st">&quot;Fiscal year&quot;</span>, <span class="dt">ylab =</span> <span class="st">&quot;Income taxes (% of GDP)&quot;</span>,
+                <span class="dt">ylim =</span> ylim,
+                <span class="dt">par.settings =</span> my.theme,
+                <span class="dt">auto.key =</span> key)
+
+<span class="co"># Print graph object</span>
+<span class="kw">print</span>(graph)</code></pre>
+<p><img src="figure/graphBaseR.png" title="plot of chunk graphBaseR" alt="plot of chunk graphBaseR" style="display: block; margin: auto;" /></p>
+<pre class="sourceCode python"><code class="sourceCode python">plt.figure(figsize=(<span class="dv">12</span>, <span class="dv">7</span>))
+
+plt.plot(quandl_data[<span class="st">&quot;Fiscal_Year&quot;</span>], quandl_data[<span class="st">&quot;Individual_Income_Taxes&quot;</span>], marker=<span class="st">&quot;o&quot;</span>, color=<span class="st">&quot;#00526D&quot;</span>, lw=<span class="dv">2</span>, label=<span class="st">&quot;Individuals&quot;</span>)
+plt.plot(quandl_data[<span class="st">&quot;Fiscal_Year&quot;</span>], quandl_data[<span class="st">&quot;Corporation_Income_Taxes&quot;</span>], marker=<span class="st">&quot;o&quot;</span>, color=<span class="st">&quot;#AD3333&quot;</span>, lw=<span class="dv">2</span>, label=<span class="st">&quot;Corporations&quot;</span>)
+
+plt.xlabel(<span class="st">&quot;Fiscal Year&quot;</span>, fontsize=<span class="dv">16</span>)
+plt.ylabel(<span class="st">&quot;Income taxes (</span><span class="ot">% o</span><span class="st">f GDP)&quot;</span>, fontsize=<span class="dv">16</span>)
+
+plt.xlim(-<span class="dv">1</span>, <span class="dv">69</span>)
+plt.xticks(quandl_data[<span class="st">&quot;Fiscal_Year&quot;</span>][<span class="dv">5</span>::<span class="dv">10</span>], quandl_data.index[<span class="dv">5</span>::<span class="dv">10</span>].year)
+
+plt.grid()
+
+plt.legend(loc=<span class="st">&quot;upper left&quot;</span>);</code></pre>
+<center> 
+<img src="figurePy/graphBasePy.png" />
+</center>
+
+<p>The first thing one can notice in this graph is the clear decreasing trend of the corporations’ income taxes: since 1945, they have dropped from about 7% of the GDP to less than 2%. On the contrary, the individuals’ contribution to the income taxes seems to have remained stable around 8% of the GDP, with maybe a slight general increase over time. Also there seems to be correlated fluctuations, with several successive years of increase or decrease probably due to the prolonged action of successive governments. The intensity of these fluctuations seems uneven along the considered time period. Finally the corporations’ income taxes seem to decrease linearly (more or less) until the mid-80’s but do not seem to change much after that. These three elements (autocorrelation, heteroscedasticity and change in slope) will certainly raise flags in diagnostic tests but we will deal with them in another challenge. Today we want to focus on making and plotting simple linear regressions instead.</p>
+<p>First, let’s fit a linear model to the individual and corporation income taxes data.</p>
+<pre class="sourceCode r"><code class="sourceCode r"><span class="co"># Fit individuals&#39; income taxes data</span>
+model.ind &lt;-<span class="st"> </span><span class="kw">lm</span>(Individual.Income.Taxes ~<span class="st"> </span>Fiscal.Year, <span class="dt">data =</span> my.data)
+
+<span class="co"># Fit corporations&#39; income taxes data</span>
+model.corp &lt;-<span class="st"> </span><span class="kw">lm</span>(Corporation.Income.Taxes ~<span class="st"> </span>Fiscal.Year, <span class="dt">data =</span> my.data)</code></pre>
+<pre class="sourceCode python"><code class="sourceCode python"><span class="co"># Fit a linear regression to the individual income taxes time series</span>
+individual_regression = sm.OLS.from_formula(<span class="st">&quot;Individual_Income_Taxes ~ Fiscal_Year&quot;</span>, quandl_data).fit()
+
+<span class="co"># Fit a linear regression to the corporation income taxes time series</span>
+corporation_regression = sm.OLS.from_formula(<span class="st">&quot;Corporation_Income_Taxes ~ Fiscal_Year&quot;</span>, quandl_data).fit()</code></pre>
+<p>Now let’s have a look to the summary statistics of each fitted model. We will display the R output only to keep things simple. However if you decide to look at the Python output, the result of the regression might look a bit different. Randy had to transform the dates into years because the fitting function did not seem capable of handling dates like the fitting function in R does (it converts the dates in days in this case).</p>
+<p>First, the model for individuals’ income taxes:</p>
+<pre class="sourceCode r"><code class="sourceCode r"><span class="co"># Summary statistics for individual income taxes model</span>
+<span class="kw">summary</span>(model.ind)</code></pre>
+<pre><code>## 
+## Call:
+## lm(formula = Individual.Income.Taxes ~ Fiscal.Year, data = my.data)
+## 
+## Residuals:
+##     Min      1Q  Median      3Q     Max 
+## -1.9522 -0.3065  0.0217  0.3101  2.0674 
+## 
+## Coefficients:
+##             Estimate Std. Error t value Pr(&gt;|t|)    
+## (Intercept) 7.84e+00   1.09e-01   72.18   &lt;2e-16 ***
+## Fiscal.Year 2.58e-05   1.33e-05    1.93    0.058 .  
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
+## 
+## Residual standard error: 0.806 on 67 degrees of freedom
+## Multiple R-squared:  0.0528, Adjusted R-squared:  0.0387 
+## F-statistic: 3.73 on 1 and 67 DF,  p-value: 0.0575</code></pre>
+<pre class="sourceCode python"><code class="sourceCode python"><span class="dt">print</span> individual_regression.summary()</code></pre>
+<p>Then, the model for corporations’ income taxes:</p>
+<pre class="sourceCode r"><code class="sourceCode r"><span class="co"># Summary statistics for corporation income taxes model</span>
+<span class="kw">summary</span>(model.corp)</code></pre>
+<pre><code>## 
+## Call:
+## lm(formula = Corporation.Income.Taxes ~ Fiscal.Year, data = my.data)
+## 
+## Residuals:
+##    Min     1Q Median     3Q    Max 
+## -1.535 -0.478 -0.150  0.394  2.394 
+## 
+## Coefficients:
+##              Estimate Std. Error t value Pr(&gt;|t|)    
+## (Intercept)  3.43e+00   9.93e-02    34.6   &lt;2e-16 ***
+## Fiscal.Year -1.56e-04   1.22e-05   -12.8   &lt;2e-16 ***
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
+## 
+## Residual standard error: 0.737 on 67 degrees of freedom
+## Multiple R-squared:  0.711,  Adjusted R-squared:  0.706 
+## F-statistic:  164 on 1 and 67 DF,  p-value: &lt;2e-16</code></pre>
+<pre class="sourceCode python"><code class="sourceCode python"><span class="dt">print</span> corporation_regression.summary()</code></pre>
+<p>What do we see? For the individual income taxes, we see a small, positive increase of +2.579e-05% of GDP per day (R treats dates as days). Over the whole 1945 to 2013 period, this corresponds to a total increase of +0.64% of GDP, <em>i.e.</em> a +8.4% global increase in the contribution of individuals to income taxes. However this increase is only marginally significant (p = 0.0575), therefore we can consider that the contribution of individuals to the income taxes has remained fairly stable during the 7 decades since WWII.</p>
+<p>We have a very different story for the corporation income taxes. The linear model shows a strongly significant (p &lt; 2e-16) decrease of -1.564e-04% of GDP per day. Over the 1945-2013 period, this corresponds to a total decrease of -3.88% of GDP, <em>i.e.</em> a -80.1% global decrease in the contribution of corporations to income taxes.</p>
+<p>Of course, we need to be very cautious in the interpretation of these results because the linear models we have fitted to the data do not take into account the potential sources of error that we have identified earlier. We will see next time how we can evaluate them, and correct them if necessary.</p>
+<p>For now, we will assume that everything is good and we will focus on plotting the two linear models and their confidence interval over the data.</p>
+<p>To do this, we will first compute the value and confidence interval as predicted by each model for different dates. We will choose dates that cover the whole studied period (1945-2013), plus a little extra on both ends (10%) to make the graph more aesthetically pleasing (<em>i.e.</em>, the models’ predictions will cover a larger time period than the x-axis limits of the graph).</p>
+<pre class="sourceCode r"><code class="sourceCode r"><span class="co"># Create new dates for model predictions</span>
+difference &lt;-<span class="st"> </span><span class="kw">as.Date</span>(<span class="st">&quot;2013-12-31&quot;</span>) -<span class="st"> </span><span class="kw">as.Date</span>(<span class="st">&quot;1945-12-31&quot;</span>)
+new.data &lt;-<span class="st"> </span><span class="kw">data.frame</span>(<span class="dt">Fiscal.Year =</span> <span class="kw">seq.Date</span>(<span class="dt">from =</span> <span class="kw">as.Date</span>(<span class="st">&quot;1945-12-31&quot;</span>) -<span class="st"> </span><span class="fl">0.1</span> *<span class="st"> </span>difference, 
+                                              <span class="dt">to =</span> <span class="kw">as.Date</span>(<span class="st">&quot;2013-12-31&quot;</span>) +<span class="st"> </span><span class="fl">0.1</span> *<span class="st"> </span>difference,
+                                              <span class="dt">by =</span> <span class="st">&quot;years&quot;</span>))
+
+<span class="co"># Compute model predictions (values + confidence intervals) for new dates</span>
+<span class="co"># Model of individual income taxes</span>
+predict.ind &lt;-<span class="st"> </span><span class="kw">within</span>(new.data, {
+  Predictions &lt;-<span class="st"> </span><span class="kw">as.data.frame</span>(<span class="kw">predict</span>(model.ind, 
+                                       <span class="dt">newdata =</span> new.data,
+                                       <span class="dt">interval =</span> <span class="st">&quot;confidence&quot;</span>))
+})
+
+<span class="co"># Model of corporation income taxes</span>
+predict.corp &lt;-<span class="st"> </span><span class="kw">within</span>(new.data, {
+  Predictions &lt;-<span class="st"> </span><span class="kw">as.data.frame</span>(<span class="kw">predict</span>(model.corp, 
+                                       <span class="dt">newdata =</span> new.data,
+                                       <span class="dt">interval =</span> <span class="st">&quot;confidence&quot;</span>))
+})</code></pre>
+<pre class="sourceCode python"><code class="sourceCode python"><span class="co"># Predict the 95% confidence bands for the regression</span>
+individual_prstd, individual_iv_l, individual_iv_u = wls_prediction_std(individual_regression)
+individual_st, individual_data, individual_ss2 = summary_table(individual_regression, alpha=<span class="fl">0.05</span>)
+
+individual_fitted_values = individual_data[:, <span class="dv">2</span>]
+individual_predict_mean_ci_low, individual_predict_mean_ci_upper = individual_data[:, <span class="dv">4</span>:<span class="dv">6</span>].T
+
+<span class="co"># Predict the 95% confidence bands for the regression</span>
+corporation_prstd, corporation_iv_l, corporation_iv_u = wls_prediction_std(corporation_regression)
+corporation_st, corporation_data, corporation_ss2 = summary_table(corporation_regression, alpha=<span class="fl">0.05</span>)
+
+corporation_fitted_values = corporation_data[:, <span class="dv">2</span>]
+corporation_predict_mean_ci_low, corporation_predict_mean_ci_upper = corporation_data[:, <span class="dv">4</span>:<span class="dv">6</span>].T</code></pre>
+<p>And finally, we will add to the data plot the predicted values as a line and the confidence intervals of the predicted values as a polygon.</p>
+<pre class="sourceCode r"><code class="sourceCode r"><span class="co"># Add predicted values for model of individual income taxes </span>
+graph &lt;-<span class="st"> </span>graph +<span class="st"> </span><span class="kw">xyplot</span>(Predictions$fit ~<span class="st"> </span>Fiscal.Year, 
+                        <span class="dt">data =</span> predict.ind,
+                        <span class="dt">type =</span> <span class="kw">c</span>(<span class="st">&quot;l&quot;</span>),
+                        <span class="dt">col =</span> <span class="st">&quot;#00526D&quot;</span>)
+
+<span class="co"># Add predicted values for model of corporation income taxes </span>
+graph &lt;-<span class="st"> </span>graph +<span class="st"> </span><span class="kw">xyplot</span>(Predictions$fit ~<span class="st"> </span>Fiscal.Year, 
+                        <span class="dt">data =</span> predict.corp,
+                        <span class="dt">type =</span> <span class="kw">c</span>(<span class="st">&quot;l&quot;</span>),
+                        <span class="dt">col =</span> <span class="st">&quot;#AD3333&quot;</span>)
+
+<span class="co"># Add confidence polygon for model of individual income taxes </span>
+graph &lt;-<span class="st"> </span>graph +<span class="st"> </span><span class="kw">layer_</span>(<span class="kw">lpolygon</span>(<span class="dt">x =</span> <span class="kw">c</span>(predict.ind$Fiscal.Year, 
+                                       <span class="kw">rev</span>(predict.ind$Fiscal.Year)),
+                                 <span class="dt">y =</span> <span class="kw">c</span>(predict.ind$Predictions$upr, 
+                                       <span class="kw">rev</span>(predict.ind$Predictions$lwr)),
+                                 <span class="dt">col =</span> <span class="st">&quot;#00526D25&quot;</span>, 
+                                 <span class="dt">border =</span> <span class="st">&quot;#00526D75&quot;</span>))</code></pre>
+<pre><code>## Error: attempt to apply non-function</code></pre>
+<pre class="sourceCode r"><code class="sourceCode r">
+<span class="co"># Add confidence polygon for model of corporation income taxes </span>
+graph &lt;-<span class="st"> </span>graph +<span class="st"> </span><span class="kw">layer_</span>(<span class="kw">lpolygon</span>(<span class="dt">x =</span> <span class="kw">c</span>(predict.corp$Fiscal.Year, 
+                                       <span class="kw">rev</span>(predict.corp$Fiscal.Year)),
+                                 <span class="dt">y =</span> <span class="kw">c</span>(predict.corp$Predictions$upr, 
+                                       <span class="kw">rev</span>(predict.corp$Predictions$lwr)),
+                                 <span class="dt">col =</span> <span class="st">&quot;#AD333325&quot;</span>, 
+                                 <span class="dt">border =</span> <span class="st">&quot;#AD333375&quot;</span>))</code></pre>
+<pre><code>## Error: attempt to apply non-function</code></pre>
+<p><img src="figure/graphPredictR1.png" title="plot of chunk graphPredictR" alt="plot of chunk graphPredictR" style="display: block; margin: auto;" /></p>
+<pre class="sourceCode r"><code class="sourceCode r">
+<span class="co"># Reprint graph object</span>
+<span class="kw">print</span>(graph)</code></pre>
+<p><img src="figure/graphPredictR2.png" title="plot of chunk graphPredictR" alt="plot of chunk graphPredictR" style="display: block; margin: auto;" /></p>
+<pre class="sourceCode python"><code class="sourceCode python">plt.plot(quandl_data[<span class="st">&quot;Fiscal_Year&quot;</span>],
+         individual_fitted_values,
+         color=<span class="st">&quot;#00526D&quot;</span>, lw=<span class="dv">2</span>)
+
+plt.fill_between(quandl_data[<span class="st">&quot;Fiscal_Year&quot;</span>],
+                 individual_predict_mean_ci_low,
+                 individual_predict_mean_ci_upper,
+                 color=<span class="st">&quot;#00526D&quot;</span>, alpha=<span class="fl">0.2</span>)
+
+plt.plot(quandl_data[<span class="st">&quot;Fiscal_Year&quot;</span>],
+         corporation_fitted_values,
+         color=<span class="st">&quot;#AD3333&quot;</span>, lw=<span class="dv">2</span>)
+
+plt.fill_between(quandl_data[<span class="st">&quot;Fiscal_Year&quot;</span>],
+                 corporation_predict_mean_ci_low,
+                 corporation_predict_mean_ci_upper,
+                 color=<span class="st">&quot;#AD3333&quot;</span>, alpha=<span class="fl">0.2</span>)
+
+plt.legend(loc=<span class="st">&quot;upper left&quot;</span>);</code></pre>
+<center> 
+<img src="figurePy/graphPredictPy.png" />
+</center>
+
+<p>And that’s it for today! We hope that you enjoyed it and that you’ll come back next time to find out more about running diagnotic tests and correcting potential errors on today’s linear models.</p>
+<hr />
+<h4 id="source-code">3 - Source code</h4>
+<p>R and Python source codes are available <a href="https://github.com/morpionZ/R-vs-Python/tree/master/Linear%20regression/code">here</a>.</p>
+</body>
+</html>

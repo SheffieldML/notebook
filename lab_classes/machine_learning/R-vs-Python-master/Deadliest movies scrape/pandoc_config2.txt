@@ -1,0 +1,6 @@
+format: html
+c: custom.css
+s: 
+S: 
+mathjax: 
+o: notebook2.html

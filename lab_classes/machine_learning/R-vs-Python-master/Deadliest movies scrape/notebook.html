@@ -1,0 +1,253 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <meta http-equiv="Content-Style-Type" content="text/css" />
+  <meta name="generator" content="pandoc" />
+  <title></title>
+  <style type="text/css">code{white-space: pre;}</style>
+  <style type="text/css">
+table.sourceCode, tr.sourceCode, td.lineNumbers, td.sourceCode {
+  margin: 0; padding: 0; vertical-align: baseline; border: none; }
+table.sourceCode { width: 100%; line-height: 100%; }
+td.lineNumbers { text-align: right; padding-right: 4px; padding-left: 4px; color: #aaaaaa; border-right: 1px solid #aaaaaa; }
+td.sourceCode { padding-left: 5px; }
+code > span.kw { color: #007020; font-weight: bold; }
+code > span.dt { color: #902000; }
+code > span.dv { color: #40a070; }
+code > span.bn { color: #40a070; }
+code > span.fl { color: #40a070; }
+code > span.ch { color: #4070a0; }
+code > span.st { color: #4070a0; }
+code > span.co { color: #60a0b0; font-style: italic; }
+code > span.ot { color: #007020; }
+code > span.al { color: #ff0000; font-weight: bold; }
+code > span.fu { color: #06287e; }
+code > span.er { color: #ff0000; font-weight: bold; }
+  </style>
+  <link rel="stylesheet" href="custom.css" type="text/css" />
+</head>
+<body>
+<p><strong>Document title:</strong> R vs Python - Round 2 (1/2)</p>
+<p><strong>Date:</strong> January 12, 2014</p>
+<p><strong>Text by:</strong> Simon Garnier (<a href="http://www.theswarmlab.com">www.theswarmlab.com</a> / <a href="http://twitter.com/sjmgarnier">@sjmgarnier</a>)</p>
+<p><strong>R code by:</strong> Simon Garnier (<a href="http://www.theswarmlab.com">www.theswarmlab.com</a> / <a href="http://twitter.com/sjmgarnier">@sjmgarnier</a>)</p>
+<p><strong>Python code by:</strong> Randy Olson (<a href="http://www.randalolson.com">www.randalolson.com</a> / <a href="http://twitter.com/randal_olson">@randal_olson</a>)</p>
+<p>Document generated with RStudio (<a href="http://www.rstudio.com">www.rstudio.com</a>), knitr (<a href="http://yihui.name/knitr/">www.yihui.name/knitr/</a>) and pandoc (<a href="http://johnmacfarlane.net/pandoc/">www.johnmacfarlane.net/pandoc/</a>). Python figures generated with iPython Notebook (<a href="http://ipython.org/notebook.html">www.ipython.org/notebook.html</a>).</p>
+<hr />
+<h4 id="foreword">Foreword</h4>
+<p>My friend Randy Olson and I got into the habit to argue about the relative qualities of our favorite languages for data analysis and visualization. I am an enthusiastic R user (<a href="http://www.r-project.org">www.r-project.org</a>) while Randy is a fan of Python (<a href="http://www.python.org">www.python.org</a>). One thing we agree on however is that our discussions are meaningless unless we actually put R and Python to a series of tests to showcase their relative strengths and weaknesses. Essentially we will set a common goal (<em>e.g.</em>, perform a particular type of data analysis or draw a particular type of graph) and create the R and Python codes to achieve this goal. And since Randy and I are all about sharing, open source and open access, we decided to make public the results of our friendly challenges so that you can help us decide between R and Python and, hopefully, also learn something along the way.</p>
+<hr />
+<h4 id="todays-challenge-a-data-thief-manual-for-honest-scientists-part-1-of-2">Today’s challenge: a data thief manual for honest scientists (Part 1 of 2)</h4>
+<h5 id="introduction">1 - Introduction</h5>
+<p>Last week we started our challenge series with a rather simple task: plot a pretty barchart from some data collected by Randy for his recent post on the <a href="www.randalolson.com/2013/12/31/most-violence-packed-films/">“Top 25 most violence packed films” in the history of the movie industry</a>. Today we will try to up our game a little bit with a more complex task. We will show you how you can collect the data that Randy used for his post directly from the website they originate from (<a href="http://www.moviebodycounts.com">www.MovieBodyCounts.com</a>). This is called data scraping, or the art of taking advantage of the gigantic database that is the Internet.</p>
+<p>The basic principle behind the scraping of website data is simple: a website is a like database, and each page of the website is like a table of this database. All we want is find in the database the tables that contain information that we would like to acquire, and then extract this information from within these relevant tables. This task can be relatively easy if all the pages of a website have a similar structure (<em>i.e.</em>, if the database is clean and well maintained). In this ideal situation, all we have to do is identify one or more stable markers that delimit the desired information and use them to tell R or Python what to save in memory. Unfortunately not all websites have a similar structure across all of their pages and it can quickly become a nightmare to identify such markers. Worse, sometimes you will have to resign yourself to scrape or correct part or all of the data manually.</p>
+<p>For this challenge, we will attempt to recover the following pieces of information for each movie listed on <a href="http://www.moviebodycounts.com">www.MovieBodyCounts.com</a>: title, release year, count of on-screen deaths and link to the movie page on <a href="http://www.imdb.com">www.imdb.com</a> (this will help us for part 2 of this challenge next week). We will detail the different steps of the process and provide for each step the corresponding code (red boxes for R, green boxes for Python). You will also find the entire codes at the end of this document.</p>
+<h5 id="step-by-step-process">2 - Step by step process</h5>
+<p>First things first, let’s set up our working environment by loading some necessary libraries.</p>
+<pre class="sourceCode r"><code class="sourceCode r"><span class="co"># Load libraries</span>
+<span class="kw">library</span>(RCurl)      <span class="co"># Everything necessary to grab webpages on the Web</span>
+<span class="kw">library</span>(XML)        <span class="co"># Everything necessary to parse XML and HTML code</span>
+<span class="kw">library</span>(pbapply)    <span class="co"># Progress bars!!! Just because why not :-)</span>
+
+<span class="co"># Create curl handle which can be used for multiple HHTP requests. </span>
+<span class="co"># followlocation = TRUE in case one of the URLs we want to grab is a redirection</span>
+<span class="co"># link.</span>
+curl &lt;-<span class="st"> </span><span class="kw">getCurlHandle</span>(<span class="dt">useragent =</span> <span class="st">&quot;R&quot;</span>, <span class="dt">followlocation =</span> <span class="ot">TRUE</span>)</code></pre>
+<pre class="sourceCode python"><code class="sourceCode python"><span class="co"># String parsing libraries</span>
+<span class="ch">import</span> string
+<span class="ch">import</span> re
+
+<span class="co"># urllib2 reads web pages if you provide it an URL</span>
+<span class="ch">import</span> urllib2
+
+<span class="co"># html2text converts HTML to Markdown, which is much easier to parse</span>
+<span class="ch">from</span> html2text <span class="ch">import</span> html2text</code></pre>
+<p>Now a word about the organization of <a href="http://www.moviebodycounts.com">www.MovieBodyCounts.com</a>. To be perfectly honest, it is a bit messy :-) Movies are organized in a series of alphabetically ordered lists (by the first letter of each movie’s title), each letter having its own page (http://www.moviebodycounts.com/movies-[A-Z].htm). There is also a list for movies which title starts with a number (http://www.moviebodycounts.com/movies-numbers.htm). Finally, all category letters are capitalized in the lists’ URLs, except for letters v and x. Annoying, right? This is just one of the many little problems one can encounter when dealing with messy databases :-)</p>
+<p>With all this information in mind, our first task is to create a list of all these lists.</p>
+<pre class="sourceCode r"><code class="sourceCode r"><span class="co"># Prepare URLs of the movie lists alphabetically ordered by first letter of</span>
+<span class="co"># movie title (capital A to Z, except for v and y) + &quot;numbers&quot; list (for movies</span>
+<span class="co"># which title starts with a number)</span>
+urls.by.letter &lt;-<span class="st"> </span><span class="kw">paste0</span>(<span class="st">&quot;http://www.moviebodycounts.com/movies-&quot;</span>, 
+                         <span class="kw">c</span>(<span class="st">&quot;numbers&quot;</span>, LETTERS[<span class="dv">1</span>:<span class="dv">21</span>], <span class="st">&quot;v&quot;</span>, <span class="st">&quot;W&quot;</span> , <span class="st">&quot;x&quot;</span>, <span class="st">&quot;Y&quot;</span>, <span class="st">&quot;Z&quot;</span>), <span class="st">&quot;.htm&quot;</span>)</code></pre>
+<pre class="sourceCode python"><code class="sourceCode python"><span class="co"># Generate a list of all letters for the Movie pages (+ a &quot;numbers&quot; page)</span>
+<span class="co"># MovieBodyCount&#39;s actor pages are all with capital letters EXCEPT v and x</span>
+letters = [<span class="st">&quot;numbers&quot;</span>] + <span class="dt">list</span>(string.letters[<span class="dv">26</span>:<span class="dv">52</span>].upper().replace(<span class="st">&quot;V&quot;</span>, <span class="st">&quot;v&quot;</span>).replace(<span class="st">&quot;X&quot;</span>, <span class="st">&quot;x&quot;</span>))</code></pre>
+<p>Our next task is to go through the HTML code of all these lists and gather the URLs of all the movie webpages. This is where the data scraping really starts.</p>
+<p>As you will quickly notices by reading the following code, Randy and I have decided to use a different approach to identify and collect the desired URLs (and of all the data in the rest of this challenge). I have decided to rely on the <a href="http://www.w3schools.com/xpath/">XML Path Language (XPath)</a>, a language that makes it easy to navigate through elements and attributes in an XML/HTML document. Randy has decided to use an approach based on more “classical” string parsing and manipulation functions. Note that these are just personal preferences. XPath interpreters are also available in Python, and R is fully equipped for manipulating character strings.</p>
+<p>For each movie list, we will…</p>
+<pre class="sourceCode r"><code class="sourceCode r"><span class="co"># For each movie list... For loops are frowned upon in R, let&#39;s use the classier</span>
+<span class="co"># apply functions instead. Here I use the pblapply from the pbapply package.</span>
+<span class="co"># It&#39;s equivalent to the regular lapply function, but it provides a neat </span>
+<span class="co"># progress bar. Unlist to get a vector. </span>
+urls.by.movie &lt;-<span class="st"> </span><span class="kw">unlist</span>(<span class="kw">pblapply</span>(urls.by.letter, <span class="dt">FUN =</span> function(URL) {</code></pre>
+<pre class="sourceCode python"><code class="sourceCode python">list_of_films = []
+  
+<span class="co"># Go through each movie list page and gather all of the movie web page URLs</span>
+<span class="kw">for</span> letter in letters:
+  <span class="kw">try</span>:</code></pre>
+<p>…download the raw HTML content of the webpage,…</p>
+<pre class="sourceCode r"><code class="sourceCode r">  <span class="co"># Load raw HTML</span>
+  raw.html &lt;-<span class="st"> </span><span class="kw">getURL</span>(URL, <span class="dt">curl =</span> curl)</code></pre>
+<pre class="sourceCode python"><code class="sourceCode python">      <span class="co"># Read the raw HTML from the web page</span>
+      page_text = urllib2.urlopen(<span class="st">&quot;http://www.moviebodycounts.com/movies-&quot;</span> + letter + <span class="st">&quot;.htm&quot;</span>).read()</code></pre>
+<p>…transform raw HTML into a more convenient format to work with,…</p>
+<pre class="sourceCode r"><code class="sourceCode r">  <span class="co"># Parse HTML content</span>
+  parsed.html &lt;-<span class="st"> </span><span class="kw">htmlParse</span>(raw.html)</code></pre>
+<pre class="sourceCode python"><code class="sourceCode python">      <span class="co"># Convert the raw HTML into Markdown</span>
+      page_text = html2text(page_text).split(<span class="st">&quot;</span><span class="ch">\n</span><span class="st">&quot;</span>)</code></pre>
+<p>…find movie page entry, store the URL for later use and close the loop.</p>
+<pre class="sourceCode r"><code class="sourceCode r">  <span class="co"># Extract desired links from HTML content using XPath. </span>
+  <span class="co"># The desired links are all the URLs (&quot;a/@href&quot;) directly following</span>
+  <span class="co"># (&quot;/following::&quot;) the image which source file is called &quot;graphic-movies.jpg&quot; </span>
+  <span class="co"># (&quot;//img[@src=&#39;graphic-movies.jpg&#39;]&quot;).</span>
+  links &lt;-<span class="st"> </span><span class="kw">as.vector</span>(<span class="kw">xpathSApply</span>(parsed.html, <span class="st">&quot;//img[@src=&#39;graphic-movies.jpg&#39;]/following::a/@href&quot;</span>))
+
+  <span class="co"># Most links are relative URLs. Add root of the website to make them absolute.</span>
+  if (!<span class="kw">is.null</span>(links)) {
+    ix =<span class="st"> </span><span class="kw">grepl</span>(<span class="st">&quot;http://www.moviebodycounts.com/&quot;</span>, links)                  <span class="co"># Find relative URLs</span>
+    links[!ix] &lt;-<span class="st"> </span><span class="kw">paste0</span>(<span class="st">&quot;http://www.moviebodycounts.com/&quot;</span>, links[!ix])   <span class="co"># Add root of website to make URLs absolute</span>
+    <span class="kw">return</span>(links)
+  }
+<span class="er">})</span>, use.names =<span class="st"> </span><span class="ot">FALSE</span><span class="er">)</span> <span class="co"># close the loop</span>
+
+<span class="co"># One URL is actually just a symbolic link to another page. Let&#39;s get rid of it.</span>
+ix &lt;-<span class="st"> </span><span class="kw">which</span>(<span class="kw">grepl</span>(<span class="st">&quot;movies-C.htm&quot;</span>, urls.by.movie))
+urls.by.movie &lt;-<span class="st"> </span>urls.by.movie[-ix]</code></pre>
+<pre class="sourceCode python"><code class="sourceCode python">      <span class="co"># Search through the web page for movie page entries</span>
+      <span class="kw">for</span> line in page_text:
+        <span class="co"># We know it&#39;s a movie page entry when it has &quot;.htm&quot; in it, but not &quot;.jpg&quot;, &quot;contact.htm&quot;, and &quot;movies.htm&quot;</span>
+        <span class="co"># .jpg means it&#39;s a line with an image -- none of the movie entries have an image</span>
+        <span class="co"># contact.htm and movies.htm means it&#39;s a link to the Contact or Movies page -- not what we want</span>
+        <span class="co"># movies- means it&#39;s a redirect link to another page -- just skip over it</span>
+        <span class="kw">if</span> <span class="st">&quot;.htm&quot;</span> in line and <span class="st">&quot;.jpg&quot;</span> not in line and <span class="st">&quot;contact.htm&quot;</span> not in line and <span class="st">&quot;movies.htm&quot;</span> not in line and <span class="st">&quot;movies-&quot;</span> not in line:
+          <span class="co">#print line</span>
+          <span class="co"># The URL is in between parentheses (), so we can simply split the string on those</span>
+          <span class="co"># Some URLs are full URLs, e.g. www.moviebodycounts.com/movie_name.html, so splitting on the / gives us only the page name</span>
+          list_of_films.append(line.split(<span class="st">&quot;(&quot;</span>)[-<span class="dv">1</span>].strip(<span class="st">&quot;)&quot;</span>).split(<span class="st">&quot;/&quot;</span>)[-<span class="dv">1</span>])
+      
+    <span class="co"># If the movie list page doesn&#39;t exist, keep going</span>
+    <span class="kw">except</span>:
+      <span class="dt">print</span> <span class="st">&quot;</span><span class="ch">\n</span><span class="st">error with &quot;</span> + letter + <span class="st">&quot;</span><span class="ch">\n</span><span class="st">&quot;</span></code></pre>
+<p>Now that we know where to find each movie, we can start the hard part of this challenge. We will go through each movie webpage and attempt to find its title, release year, count of on-screen deaths and link to its page on <a href="http://www.imdb.com">www.imdb.com</a>. We will save all this information in a .csv file.</p>
+<p>For each movie, we will…</p>
+<pre class="sourceCode r"><code class="sourceCode r"><span class="co"># For each movie... </span>
+<span class="co"># do.call(rbind, ...) to reorganize the results in a nice data frame</span>
+data &lt;-<span class="st"> </span><span class="kw">do.call</span>(rbind, <span class="kw">pblapply</span>(urls.by.movie, <span class="dt">FUN =</span> function(URL) {</code></pre>
+<pre class="sourceCode python"><code class="sourceCode python"><span class="co"># Now that we have every movie web page URL, go through each movie page and</span>
+<span class="co"># extract the movie name, kill counts, etc.</span>
+out_file = <span class="dt">open</span>(<span class="st">&quot;film-death-counts.csv&quot;</span>, <span class="st">&quot;wb&quot;</span>)
+out_file.write(<span class="st">&quot;Film,Year,Kill_Count,IMDB_url</span><span class="ch">\n</span><span class="st">&quot;</span>)
+  
+<span class="kw">for</span> film_page in list_of_films:
+  <span class="kw">try</span>:
+      <span class="co"># The information we&#39;re looking for on the page:</span>
+      film = <span class="st">&quot;&quot;</span>
+      kills = <span class="st">&quot;&quot;</span>
+      year = <span class="st">&quot;&quot;</span>
+      IMDB_url = <span class="st">&quot;&quot;</span>
+
+      <span class="co"># A flag indicating that we&#39;ve found the film title on the page</span>
+      found_title = <span class="ot">False</span></code></pre>
+<p>…download the raw HTML content of the webpage and transform raw HTML into a more convenient format to work with,…</p>
+<pre class="sourceCode r"><code class="sourceCode r">  <span class="co"># Load raw HTML</span>
+  raw.html &lt;-<span class="st"> </span><span class="kw">getURL</span>(URL, <span class="dt">curl =</span> curl)
+
+  <span class="co"># Parse HTML content</span>
+  parsed.html &lt;-<span class="st"> </span><span class="kw">htmlParse</span>(raw.html)</code></pre>
+<pre class="sourceCode python"><code class="sourceCode python">      <span class="co"># Read the page&#39;s raw HTML and convert it to Markdown (again) and go</span>
+      <span class="co"># through each line</span>
+      <span class="kw">for</span> line in html2text(urllib2.urlopen(<span class="st">&quot;http://www.moviebodycounts.com/&quot;</span> + film_page).read()).split(<span class="st">&quot;</span><span class="ch">\n</span><span class="st">&quot;</span>):</code></pre>
+<p>…attempt to find movie title,…</p>
+<pre class="sourceCode r"><code class="sourceCode r">  <span class="co"># Find movie title</span>
+  <span class="co"># Title appears inside a XML/HTML node called &quot;title&quot; (&quot;//title&quot;). In this</span>
+  <span class="co"># node, it comes after &quot;Movie Body Counts: &quot;. I use gsub to get rid off &quot;Movie</span>
+  <span class="co"># Body Counts: &quot; and keep only the movie title.</span>
+  Film &lt;-<span class="st"> </span><span class="kw">xpathSApply</span>(parsed.html, <span class="st">&quot;//title&quot;</span>, xmlValue)
+  Film &lt;-<span class="st"> </span><span class="kw">gsub</span>(<span class="st">&quot;Movie Body Counts: &quot;</span>, <span class="st">&quot;&quot;</span>, Film)</code></pre>
+<pre class="sourceCode python"><code class="sourceCode python"><span class="co"># If we haven&#39;t found the title yet, these markers tell us we&#39;ve found the movie</span>
+<span class="co"># title</span>
+        <span class="kw">if</span> not found_title and <span class="st">&quot;!&quot;</span> not in line and <span class="st">&quot;(&quot;</span> not in line and <span class="st">&quot;[&quot;</span> not in line and line.strip() != <span class="st">&quot;&quot;</span>:
+          film = line.replace(<span class="st">&quot;,&quot;</span>, <span class="st">&quot;&quot;</span>).strip(<span class="st">&quot;:&quot;</span>)
+          found_title = <span class="ot">True</span></code></pre>
+<p>…attempt to find movie year,…</p>
+<pre class="sourceCode r"><code class="sourceCode r">  <span class="co"># Find movie year</span>
+  <span class="co"># The year is usually a text inside (&quot;/descendant::text()&quot;) a link node</span>
+  <span class="co"># (&quot;//a&quot;) which source contains the string &quot;charts-year&quot; (&quot;[contains(@href,</span>
+  <span class="co"># &#39;charts-year&#39;)]&quot;).</span>
+  Year &lt;-<span class="st"> </span><span class="kw">as.numeric</span>(<span class="kw">xpathSApply</span>(parsed.html, <span class="st">&quot;//a[contains(@href, &#39;charts-year&#39;)]/descendant::text()&quot;</span>, xmlValue))</code></pre>
+<pre class="sourceCode python"><code class="sourceCode python">        <span class="co"># The year is usually on a line with &quot;charts-year&quot;</span>
+        <span class="kw">if</span> <span class="st">&quot;charts-year&quot;</span> in line:
+          year = line.split(<span class="st">&quot;[&quot;</span>)[<span class="dv">1</span>].split(<span class="st">&quot;]&quot;</span>)[<span class="dv">0</span>]</code></pre>
+<p>…attempt to find link to movie on IMDB,…</p>
+<pre class="sourceCode r"><code class="sourceCode r">  <span class="co"># Find IMDB link</span>
+  <span class="co"># The IMDB link is inside a link node (&quot;//a&quot;) which source contains &quot;imdb&quot;</span>
+  <span class="co"># (&quot;/@href[contains(.,&#39;imdb&#39;)]&quot;)</span>
+  IMDB_URL &lt;-<span class="st"> </span><span class="kw">as.vector</span>(<span class="kw">xpathSApply</span>(parsed.html, <span class="st">&quot;//a/@href[contains(.,&#39;imdb&#39;)]&quot;</span>))[<span class="dv">1</span>]
+
+  <span class="co"># Note: We select the first element of the vector because for at least one of</span>
+  <span class="co"># the movies, this command returns two links.</span></code></pre>
+<pre class="sourceCode python"><code class="sourceCode python">        <span class="co"># The IMDB url is on a line with &quot;[imdb]&quot;</span>
+        <span class="kw">if</span> <span class="st">&quot;[imdb]&quot;</span> in line.lower():
+          IMDB_url = line.lower().split(<span class="st">&quot;[imdb](&quot;</span>)[<span class="dv">1</span>].split(<span class="st">&quot;)&quot;</span>)[<span class="dv">0</span>]</code></pre>
+<p>… and finally attempt to find the on-screen kill count. Here, Randy chose an approach that minimizes his coding effort, but that will potentially force him to make several manual corrections a posteriori. I chose to find a solution that works with minimal to no manual corrections, but that requires an extra coding effort. Whichever approach is best depends mostly on the size of the data you want to scrape and the time you have to do it.</p>
+<pre class="sourceCode r"><code class="sourceCode r">  <span class="co"># Find kill count.</span>
+  <span class="co"># Kill count is contained in the first non-empty text node</span>
+  <span class="co"># (&quot;/following::text()[normalize-space()]&quot;) after the image which source file</span>
+  <span class="co"># is called &quot;graphic-bc.jpg&quot; (&quot;//img[@src=&#39;graphic-bc.jpg&#39;]&quot;)</span>
+  Body_Count &lt;-<span class="st"> </span><span class="kw">xpathSApply</span>(parsed.html, <span class="st">&quot;//img[@src=&#39;graphic-bc.jpg&#39;]/following::text()[normalize-space()]&quot;</span>, xmlValue)[<span class="dv">1</span>]
+
+  <span class="co"># Now we need to clean up the text node that we just extracted because there</span>
+  <span class="co"># are lots of inconsistencies in the way the kill counts are displayed across</span>
+  <span class="co"># all movie pages. For instance, counts are sometimes accompanied by text, not</span>
+  <span class="co"># always the same, and sometimes there is no text at all. Sometimes the total</span>
+  <span class="co"># count is split in two numbers (e.g., number of dead humans and number of</span>
+  <span class="co"># dead aliens). And sometimes the total count is displayed and accompanied by</span>
+  <span class="co"># a split count in parenthesis. First, let&#39;s remove everything that is</span>
+  <span class="co"># writtent in parenthesis or that is not a number.</span>
+  <span class="co"># Using gsub, remove everything in parenthesis and all non number characters</span>
+  Body_Count &lt;-<span class="st"> </span><span class="kw">gsub</span>(<span class="st">&quot;</span><span class="ch">\\</span><span class="st">(.*?</span><span class="ch">\\</span><span class="st">)&quot;</span>, <span class="st">&quot; &quot;</span>, Body_Count)
+  Body_Count &lt;-<span class="st"> </span><span class="kw">gsub</span>(<span class="st">&quot;[^0-9]+&quot;</span>, <span class="st">&quot; &quot;</span>, Body_Count)
+  
+  <span class="co"># In case the total count has been split, we want to separate these numbers</span>
+  <span class="co"># from each other so that we can add them up later. Using strsplit, split the</span>
+  <span class="co"># character string at spaces</span>
+  Body_Count &lt;-<span class="st"> </span><span class="kw">unlist</span>(<span class="kw">strsplit</span>(Body_Count, <span class="st">&quot; &quot;</span>))
+  
+  <span class="co"># For now, we have extracted characters. Transform them into numbers.</span>
+  Body_Count &lt;-<span class="st"> </span><span class="kw">as.numeric</span>(Body_Count)
+  
+  <span class="co"># Sum up the numbers (in case they have been split into separate categories.</span>
+  Body_Count &lt;-<span class="st"> </span><span class="kw">sum</span>(Body_Count, <span class="dt">na.rm =</span> <span class="ot">TRUE</span>)
+  </code></pre>
+<pre class="sourceCode python"><code class="sourceCode python">        <span class="co"># The kill counts are usually on a line with &quot;Film:&quot;</span>
+        <span class="kw">if</span> <span class="st">&quot;film:&quot;</span> in line.lower() or <span class="st">&quot;kills:&quot;</span> in line.lower() or <span class="st">&quot;count:&quot;</span> in line.lower():
+          kills = re.sub(<span class="st">&quot;[^0-9]&quot;</span>, <span class="st">&quot;&quot;</span>, line.split(<span class="st">&quot;:&quot;</span>)[<span class="dv">1</span>].split(<span class="st">&quot;(&quot;</span>)[<span class="dv">0</span>])</code></pre>
+<p>Almost done! Now we just need to close the loop and write the data frame into a .csv file</p>
+<pre class="sourceCode r"><code class="sourceCode r">  <span class="co"># Return scraped data into a data frame form</span>
+  <span class="kw">return</span>(<span class="kw">data.frame</span>(IMDB_URL, Film, Year, Body_Count))
+<span class="er">}))</span>
+
+<span class="co"># Save scraped data in a .csv file for future use</span>
+<span class="kw">write.csv</span>(data, <span class="st">&quot;movies-R.csv&quot;</span>, <span class="dt">row.names =</span> <span class="ot">FALSE</span>)</code></pre>
+<pre class="sourceCode python"><code class="sourceCode python">      out_file.write(film + <span class="st">&quot;,&quot;</span> + year + <span class="st">&quot;,&quot;</span> + kills + <span class="st">&quot;,&quot;</span> + IMDB_url + <span class="st">&quot;</span><span class="ch">\n</span><span class="st">&quot;</span>)
+
+    <span class="co"># If a movie page fails to open, print out the error and move on to the next movie</span>
+    <span class="kw">except</span> <span class="ot">Exception</span> <span class="ch">as</span> e:
+      <span class="dt">print</span> film_page
+    <span class="dt">print</span> e
+
+out_file.close()</code></pre>
+<p>And voilà! You should now have a .csv file somewhere on your computer containing all the information we just scraped from the website. Not too hard, right?</p>
+<p>Keep the .csv file, we will use it again next week to complete this challenge by scraping additional information from <a href="http://www.imdb.com">www.imdb.com</a>.</p>
+<hr />
+<h4 id="source-code">3 - Source code</h4>
+<p>R and Python source codes are available <a href="https://github.com/morpionZ/R-vs-Python/tree/master/Deadliest%20movies%20scrape/code">here</a>.</p>
+<hr />
+<h4 id="bonus-for-the-braves">4 - Bonus for the braves</h4>
+<p>Today’s challenge was code and text heavy. No pretty pictures to please the eye. So, for all the brave people who made it to the end, here is a cat picture :-)</p>
+<center> 
+<img src="programming_cat.jpg" />
+</center>
+</body>
+</html>

@@ -1,0 +1,238 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <meta http-equiv="Content-Style-Type" content="text/css" />
+  <meta name="generator" content="pandoc" />
+  <title></title>
+  <style type="text/css">code{white-space: pre;}</style>
+  <style type="text/css">
+table.sourceCode, tr.sourceCode, td.lineNumbers, td.sourceCode {
+  margin: 0; padding: 0; vertical-align: baseline; border: none; }
+table.sourceCode { width: 100%; line-height: 100%; }
+td.lineNumbers { text-align: right; padding-right: 4px; padding-left: 4px; color: #aaaaaa; border-right: 1px solid #aaaaaa; }
+td.sourceCode { padding-left: 5px; }
+code > span.kw { color: #007020; font-weight: bold; }
+code > span.dt { color: #902000; }
+code > span.dv { color: #40a070; }
+code > span.bn { color: #40a070; }
+code > span.fl { color: #40a070; }
+code > span.ch { color: #4070a0; }
+code > span.st { color: #4070a0; }
+code > span.co { color: #60a0b0; font-style: italic; }
+code > span.ot { color: #007020; }
+code > span.al { color: #ff0000; font-weight: bold; }
+code > span.fu { color: #06287e; }
+code > span.er { color: #ff0000; font-weight: bold; }
+  </style>
+  <link rel="stylesheet" href="custom.css" type="text/css" />
+</head>
+<body>
+<p><strong>Document title:</strong> R vs Python - Round 1</p>
+<p><strong>Date:</strong> January 5, 2014</p>
+<p><strong>Text by:</strong> Simon Garnier (<a href="http://www.theswarmlab.com">www.theswarmlab.com</a> / <a href="http://twitter.com/sjmgarnier">@sjmgarnier</a>)</p>
+<p><strong>R code by:</strong> Simon Garnier (<a href="http://www.theswarmlab.com">www.theswarmlab.com</a> / <a href="http://twitter.com/sjmgarnier">@sjmgarnier</a>)</p>
+<p><strong>Python code by:</strong> Randy Olson (<a href="http://www.randalolson.com">www.randalolson.com</a> / <a href="http://twitter.com/randal_olson">@randal_olson</a>)</p>
+<p>Document generated with RStudio (<a href="http://www.rstudio.com">www.rstudio.com</a>), knitr (<a href="http://yihui.name/knitr/">www.yihui.name/knitr/</a>) and pandoc (<a href="http://johnmacfarlane.net/pandoc/">www.johnmacfarlane.net/pandoc/</a>). Python figures generated with iPython Notebook (<a href="http://ipython.org/notebook.html">www.ipython.org/notebook.html</a>).</p>
+<hr />
+<h4 id="foreword">Foreword</h4>
+<p>My friend Randy Olson and I got into the habit to argue about the relative qualities of our favorite languages for data analysis and visualization. I am an enthusiastic R user (<a href="http://www.r-project.org">www.r-project.org</a>) while Randy is a fan of Python (<a href="http://www.python.org">www.python.org</a>). One thing we agree on however is that our discussions are meaningless unless we actually put R and Python to a series of tests to showcase their relative strengths and weaknesses. Essentially we will set a common goal (<em>e.g.</em>, perform a particular type of data analysis or draw a particular type of graph) and create the R and Python codes to achieve this goal. And since Randy and I are all about sharing, open source and open access, we decided to make public the results of our friendly challenges so that you can help us decide between R and Python and, hopefully, also learn something along the way.</p>
+<hr />
+<h4 id="todays-challenge-where-we-learn-that-hollywoods-cemetery-is-full">Today’s challenge: where we learn that Hollywood’s cemetery is full</h4>
+<h5 id="introduction">1 - Introduction</h5>
+<p>For this first challenge, we will use data collected by Randy for his recent post on the <a href="www.randalolson.com/2013/12/31/most-violence-packed-films/">“Top 25 most violence packed films” in the history of the movie industry</a>. For his post, Randy generated a simple horizontal barchart showing the top 25 more violent films ordered by number of on screen deaths per minute. In the rest of this document, we will show you how to reproduce this graph using Python and how to achieve a similar result with R. We will detail the different steps of the process and provide for each step the corresponding code (red boxes for R, green boxes for Python). You will also find the entire codes at the end of this document.</p>
+<p>And now without further ado, let’s get started!</p>
+<h5 id="step-by-step-process">2 - Step by step process</h5>
+<p>First thing first, let’s set up our working environment by loading some necessary libraries.</p>
+<pre class="sourceCode r"><code class="sourceCode r"><span class="co"># Load libraries</span>
+<span class="kw">library</span>(lattice)        <span class="co"># Very versatile graphics package</span>
+<span class="kw">library</span>(latticeExtra)   <span class="co"># Addition to &quot;lattice&quot; that makes layering graphs a </span>
+                        <span class="co"># breathe, and I&#39;m a lazy person, so why not</span></code></pre>
+<pre class="sourceCode python"><code class="sourceCode python"><span class="co"># This starts the IPython Notebook pylab module, useful for plotting and</span>
+<span class="co"># interactive scientific computing</span>
+%pylab inline
+<span class="ch">from</span> pandas <span class="ch">import</span> *</code></pre>
+<p>Now let’s load the data for today’s job. The raw data were scraped by Randy (using Python) from <a href="http://www.MovieBodyCounts.com">www.MovieBodyCounts.com</a> and he generously provided the result of his hard work on FigShare at this address: <a href="http://dx.doi.org/10.6084/m9.figshare.889719">http://dx.doi.org/10.6084/m9.figshare.889719</a>.</p>
+<pre class="sourceCode r"><code class="sourceCode r"><span class="co"># Load data into a data frame</span>
+body.count.data &lt;-<span class="st"> </span><span class="kw">read.csv</span>(<span class="st">&quot;http://files.figshare.com/1332945/film_death_counts.csv&quot;</span>)</code></pre>
+<pre class="sourceCode python"><code class="sourceCode python"><span class="co"># Read the data into a pandas DataFrame</span>
+body_count_data = read_csv(<span class="st">&quot;http://files.figshare.com/1332945/film_death_counts.csv&quot;</span>)</code></pre>
+<p>For each movie, the data frame contains a column for the total number of on screen deaths (“Body_Count”) and a column for the duration (“Length_Minutes”). We will now create an extra column for the number of on screen deaths per minute of each movie (“Deaths_Per_Minute”)</p>
+<pre class="sourceCode r"><code class="sourceCode r"><span class="co"># Compute on screen deaths per minute for each movie. </span>
+body.count.data &lt;-<span class="st"> </span><span class="kw">within</span>(body.count.data, { 
+  Deaths_Per_Minute &lt;-<span class="st"> </span>Body_Count /<span class="st"> </span>Length_Minutes
+  ord &lt;-<span class="st"> </span><span class="kw">order</span>(Deaths_Per_Minute, <span class="dt">decreasing =</span> <span class="ot">TRUE</span>)  <span class="co"># useful later</span>
+})</code></pre>
+<pre class="sourceCode python"><code class="sourceCode python"><span class="co"># Divide the body counts by the length of the film</span>
+body_count_data[<span class="st">&quot;Deaths_Per_Minute&quot;</span>] = (body_count_data[<span class="st">&quot;Body_Count&quot;</span>].<span class="dt">apply</span>(<span class="dt">float</span>).values /
+                                          body_count_data[<span class="st">&quot;Length_Minutes&quot;</span>].values)</code></pre>
+<p>Now we will reorder the data frame by (descending) number of on screen deaths per minute, and select the top 25 most violent movies according to this criterion.</p>
+<pre class="sourceCode r"><code class="sourceCode r"><span class="co"># Reorder &quot;body.count.data&quot; by (descending) number of on screen deaths per minute</span>
+body.count.data &lt;-<span class="st"> </span>body.count.data[body.count.data$ord, ]
+
+<span class="co"># Select top 25 most violent movies by number of on screen deaths per minute</span>
+body.count.data &lt;-<span class="st"> </span>body.count.data[<span class="dv">1</span>:<span class="dv">25</span>,]</code></pre>
+<pre class="sourceCode python"><code class="sourceCode python"><span class="co"># Only keep the top 25 highest kills per minute films</span>
+body_count_data = body_count_data.sort(<span class="st">&quot;Deaths_Per_Minute&quot;</span>, ascending=<span class="ot">False</span>)[:<span class="dv">25</span>]
+
+<span class="co"># Change the order of the data so highest kills per minute films are on top in the plot</span>
+body_count_data = body_count_data.sort(<span class="st">&quot;Deaths_Per_Minute&quot;</span>, ascending=<span class="ot">True</span>)</code></pre>
+<p>In Randy’s graph, the “y” axis shows the film title with the release date. We will now generate the full title for each movie following a “Movie name (year)” format, and append it to the data frame.</p>
+<pre class="sourceCode r"><code class="sourceCode r"><span class="co"># Combine film title and release date into a new factor column with levels</span>
+<span class="co"># ordered by ascending violence</span>
+body.count.data &lt;-<span class="st"> </span><span class="kw">within</span>(body.count.data, {
+  Full_Title &lt;-<span class="st"> </span><span class="kw">paste0</span>(Film, <span class="st">&quot; (&quot;</span>, Year, <span class="st">&quot;)&quot;</span>)
+  ord &lt;-<span class="st"> </span><span class="kw">order</span>(Deaths_Per_Minute, <span class="dt">decreasing =</span> <span class="ot">TRUE</span>)
+  Full_Title &lt;-<span class="st"> </span><span class="kw">ordered</span>(Full_Title, <span class="dt">levels =</span> <span class="kw">rev</span>(<span class="kw">unique</span>(Full_Title[ord])))  <span class="co"># some films are duplicated! Bad Randy!</span>
+})</code></pre>
+<pre class="sourceCode python"><code class="sourceCode python"><span class="co"># Generate the full titles for the movies: movie name (year)</span>
+full_title = []
+
+<span class="kw">for</span> film, year in <span class="dt">zip</span>(body_count_data[<span class="st">&quot;Film&quot;</span>].values, body_count_data[<span class="st">&quot;Year&quot;</span>].values):
+  full_title.append(film + <span class="st">&quot; (&quot;</span> + <span class="dt">str</span>(year) + <span class="st">&quot;)&quot;</span>)
+
+body_count_ y-axis ticks on the left and x-axis ticks on the bottom
+ax.yaxis.tick_left()
+ax.xaxis.tick_bottom()data[<span class="st">&quot;Full_Title&quot;</span>] = array(full_title)</code></pre>
+<p>Now we are ready to generate the barchart. We’re going to start with the default options and then we will make this thing look pretty.</p>
+<pre class="sourceCode r"><code class="sourceCode r"><span class="co"># Generate base graph</span>
+graph &lt;-<span class="st"> </span><span class="kw">barchart</span>(Full_Title ~<span class="st"> </span>Deaths_Per_Minute, <span class="dt">data =</span> body.count.data)
+<span class="kw">print</span>(graph)</code></pre>
+<p><img src="figure/baseGraphR.png" title="plot of chunk baseGraphR" alt="plot of chunk baseGraphR" style="display: block; margin: auto;" /></p>
+<pre class="sourceCode python"><code class="sourceCode python"><span class="co"># plot the bars</span>
+fig = plt.figure(figsize=(<span class="dv">8</span>,<span class="dv">12</span>))
+
+<span class="co"># Plot the red horizontal bars</span>
+rects = plt.barh(<span class="dt">range</span>(<span class="dt">len</span>(body_count_data[<span class="st">&quot;Deaths_Per_Minute&quot;</span>])),
+                 body_count_data[<span class="st">&quot;Deaths_Per_Minute&quot;</span>],
+                 height=<span class="fl">0.8</span>,
+                 align=<span class="st">&quot;center&quot;</span>,
+                 color=<span class="st">&quot;#8A0707&quot;</span>,
+                 edgecolor=<span class="st">&quot;none&quot;</span>)
+
+<span class="co"># Add the film labels to left of the bars (y-axis)</span>
+yticks(<span class="dt">range</span>(<span class="dt">len</span>(body_count_data[<span class="st">&quot;Full_Title&quot;</span>])), body_count_data[<span class="st">&quot;Full_Title&quot;</span>].values, fontsize=<span class="dv">14</span>)xticks(arange(<span class="dv">0</span>, <span class="dv">5</span>, <span class="dv">1</span>), [<span class="st">&quot;&quot;</span>])</code></pre>
+<center> 
+<img src="figurePy/basePy.png" />
+</center>
+
+<p>Ok, now let’s make this pretty.</p>
+<pre class="sourceCode r"><code class="sourceCode r"><span class="co"># Create theme</span>
+my.bloody.theme &lt;-<span class="st"> </span><span class="kw">within</span>(<span class="kw">trellis.par.get</span>(), {    <span class="co"># Initialize theme with default value</span>
+  axis.line$col &lt;-<span class="st"> </span><span class="ot">NA</span>                             <span class="co"># Remove axes </span>
+  plot.polygon &lt;-<span class="st"> </span><span class="kw">within</span>(plot.polygon, {
+    col &lt;-<span class="st"> &quot;#8A0606&quot;</span>                              <span class="co"># Set bar colors to a nice bloody red</span>
+    border &lt;-<span class="st"> </span><span class="ot">NA</span>                                  <span class="co"># Remove bars&#39; outline</span>
+  })
+  axis.text$cex &lt;-<span class="st"> </span><span class="dv">1</span>                              <span class="co"># Default axis text size is a bit small. Make it bigger</span>
+  layout.heights &lt;-<span class="st"> </span><span class="kw">within</span>(layout.heights, {
+    bottom.padding &lt;-<span class="st"> </span><span class="dv">0</span>                           <span class="co"># Remove bottom padding</span>
+    axis.bottom &lt;-<span class="st"> </span><span class="dv">0</span>                              <span class="co"># Remove axis padding at the bottom of the graph</span>
+    axis.top &lt;-<span class="st"> </span><span class="dv">0</span>                                 <span class="co"># Remove axis padding at the top of the graph</span>
+  })
+})
+
+<span class="co"># Update figure with new theme + other improvements (like a title for instance)</span>
+graph &lt;-<span class="st"> </span><span class="kw">update</span>(
+  graph, 
+  <span class="dt">main=</span><span class="st">&#39;25 most violence packed films by deaths per minute&#39;</span>,    <span class="co"># Title of the barchart</span>
+  <span class="dt">par.settings =</span> my.bloody.theme,                               <span class="co"># Use custom theme</span>
+  <span class="dt">xlab =</span> <span class="ot">NULL</span>,                                                  <span class="co"># Remove label of x axis</span>
+  <span class="dt">scales=</span><span class="kw">list</span>(<span class="dt">x=</span><span class="kw">list</span>(<span class="dt">at=</span><span class="ot">NULL</span>)),                                 <span class="co"># Remove rest of x axis</span>
+  <span class="dt">xlim =</span> <span class="kw">c</span>(<span class="dv">0</span>, <span class="fl">6.7</span>),                                             <span class="co"># Set graph limits along x axis to accomodate the additional text (requires some trial and error)</span>
+  <span class="dt">box.width=</span><span class="fl">0.75</span>)                                               <span class="co"># Default bar width is a bit small. Make it bigger)</span>
+
+<span class="kw">print</span>(graph)</code></pre>
+<p><img src="figure/prettyR.png" title="plot of chunk prettyR" alt="plot of chunk prettyR" style="display: block; margin: auto;" /></p>
+<pre class="sourceCode python"><code class="sourceCode python"><span class="co"># Don&#39;t have any x tick labels</span>
+xticks(arange(<span class="dv">0</span>, <span class="dv">5</span>, <span class="dv">1</span>), [<span class="st">&quot;&quot;</span>])
+
+<span class="co"># Plot styling</span>
+
+<span class="co"># Remove the plot frame lines</span>
+ax = axes()
+ax.spines[<span class="st">&quot;top&quot;</span>].set_visible(<span class="ot">False</span>)
+ax.spines[<span class="st">&quot;right&quot;</span>].set_visible(<span class="ot">False</span>)
+ax.spines[<span class="st">&quot;left&quot;</span>].set_visible(<span class="ot">False</span>)
+ax.spines[<span class="st">&quot;bottom&quot;</span>].set_visible(<span class="ot">False</span>)
+
+<span class="co"># Color the y-axis ticks the same dark red color, and the x-axis ticks white</span>
+ax.tick_params(axis=<span class="st">&quot;y&quot;</span>, color=<span class="st">&quot;#8A0707&quot;</span>)
+ax.tick_params(axis=<span class="st">&quot;x&quot;</span>, color=<span class="st">&quot;white&quot;</span>)
+
+ax.xaxis.grid(color=<span class="st">&quot;white&quot;</span>, linestyle=<span class="st">&quot;-&quot;</span>)</code></pre>
+<center> 
+<img src="figurePy/prettyPy.png" />
+</center>
+
+<p>Finally, the last thing we want to add to our graph is the number of deaths per minute and the duration of each movie on the right of the graph.</p>
+<pre class="sourceCode r"><code class="sourceCode r"><span class="co"># Combine number of on screen death per minute and duration of the movies into a new character string column</span>
+body.count.data &lt;-<span class="st"> </span><span class="kw">within</span>(body.count.data, {
+  Deaths_Per_Minute_With_Length =<span class="st"> </span><span class="kw">paste0</span>(<span class="kw">round</span>(body.count.data$Deaths_Per_Minute, <span class="dt">digits=</span><span class="dv">2</span>), <span class="st">&quot; (&quot;</span>, body.count.data$Length_Minutes, <span class="st">&quot; mins)&quot;</span>)
+})
+
+<span class="co"># Add number of on screen deaths per minute and duration of movies at the end of each bar </span>
+graph &lt;-<span class="st"> </span>graph +<span class="st"> </span><span class="kw">layer</span>(<span class="kw">with</span>(body.count.data, 
+  <span class="kw">panel.text</span>(
+    Deaths_Per_Minute,                  <span class="co"># x position of the text</span>
+    <span class="dv">25</span>:<span class="dv">1</span>,                               <span class="co"># y position of the text</span>
+    <span class="dt">pos =</span> <span class="dv">4</span>,                            <span class="co"># Position of the text relative to the x and y position (4 = to the right)</span>
+    Deaths_Per_Minute_With_Length)))    <span class="co"># Text to display                                     </span>
+
+<span class="co"># Print graph</span>
+<span class="kw">print</span>(graph)</code></pre>
+<p><img src="figure/rightLabelsR.png" title="plot of chunk rightLabelsR" alt="plot of chunk rightLabelsR" style="display: block; margin: auto;" /></p>
+<pre class="sourceCode python"><code class="sourceCode python"><span class="co"># This function adds the deaths per minute label to the right of the bars</span>
+<span class="kw">def</span> autolabel(rects):
+  <span class="kw">for</span> i, rect in <span class="dt">enumerate</span>(rects):
+  width = rect.get_width()
+label_text = (<span class="dt">str</span>(<span class="dt">round</span>(<span class="dt">float</span>(width), <span class="dv">2</span>)) +
+                <span class="co">&quot; (&quot;</span> + <span class="dt">str</span>(body_count_data[<span class="st">&quot;Length_Minutes&quot;</span>].values[i]) +
+                <span class="co">&quot; mins)&quot;</span>)
+
+plt.text(width + <span class="fl">0.25</span>,
+         rect.get_y() + rect.get_height() / <span class="dv">2</span>.,
+         label_text,
+         ha=<span class="st">&quot;left&quot;</span>,
+         va=<span class="st">&quot;center&quot;</span>,
+         fontsize=<span class="dv">14</span>)
+
+autolabel(rects)</code></pre>
+<center> 
+<img src="figurePy/finalPy.png" />
+</center>
+
+<hr />
+<h4 id="r-bonus">3 - R bonus</h4>
+<p>Just for fun, I decided to add to the R graph a little accessory in relation with the general theme of this data set.</p>
+<pre class="sourceCode r"><code class="sourceCode r"><span class="co"># Load additional libraries</span>
+<span class="kw">library</span>(jpeg)  <span class="co"># To read JPG images</span>
+<span class="kw">library</span>(grid)  <span class="co"># Graphics library with better image plotting capabilities</span>
+
+<span class="co"># Download a pretty background image; mode is set to &quot;wb&quot; because it seems that</span>
+<span class="co"># Windows needs it. I don&#39;t use Windows, I can&#39;t confirm</span>
+<span class="kw">download.file</span>(<span class="dt">url =</span> <span class="st">&quot;http://www.theswarmlab.com/wp-content/uploads/2014/01/bloody_gun.jpg&quot;</span>, 
+              <span class="dt">destfile =</span> <span class="st">&quot;bloody_gun.jpg&quot;</span>, <span class="dt">quiet =</span> <span class="ot">TRUE</span>, <span class="dt">mode =</span> <span class="st">&quot;wb&quot;</span>)
+
+<span class="co"># Load gun image using &quot;readJPEG&quot; from the &quot;jpeg&quot; package</span>
+img &lt;-<span class="st"> </span><span class="kw">readJPEG</span>(<span class="st">&quot;bloody_gun.jpg&quot;</span>)
+
+<span class="co"># Add image to graph using &quot;grid.raster&quot; from the &quot;grid&quot; package</span>
+graph &lt;-<span class="st"> </span>graph +<span class="st"> </span><span class="kw">layer_</span>(
+  <span class="kw">grid.raster</span>(
+    <span class="kw">as.raster</span>(img),                 <span class="co"># Image as a raster</span>
+    <span class="dt">x =</span> <span class="dv">1</span>,                          <span class="co"># x location of image &quot;Normalised Parent Coordinates&quot;</span>
+    <span class="dt">y =</span> <span class="dv">0</span>,                          <span class="co"># y location of image &quot;Normalised Parent Coordinates&quot;</span>
+    <span class="dt">height =</span> <span class="fl">0.7</span>,                   <span class="co"># Height of the image. 1 indicates that the image height is equal to the graph height</span>
+    <span class="dt">just =</span> <span class="kw">c</span>(<span class="st">&quot;right&quot;</span>, <span class="st">&quot;bottom&quot;</span>)))   <span class="co"># Justification of the image relative to its x and y locations</span>
+
+<span class="co"># Print graph</span>
+<span class="kw">print</span>(graph)</code></pre>
+<p><img src="figure/gunR.png" title="plot of chunk gunR" alt="plot of chunk gunR" style="display: block; margin: auto;" /></p>
+<hr />
+<h4 id="source-code">4 - Source code</h4>
+<p>R and Python source codes are available <a href="https://github.com/morpionZ/R-vs-Python/tree/master/Deadliest%20movies/code">here</a>.</p>
+<p>For F# fan, <a href="http://terjetyl.ghost.io/">Terje Tyldum</a> has written his version of the code in F# <a href="http://terjetyl.ghost.io/f-charting-challenge/">here</a>.</p>
+<p>Randy and I also recommend that you check out <a href="http://nbviewer.ipython.org/github/yaph/ipython-notebooks/blob/master/Exploring%20Movie%20Body%20Counts.ipynb">this post</a> by <a href="http://ramiro.org/">Ramiro Gómez</a> (<a href="https://twitter.com/yaph">@yaph</a>) where he does a more in-depth analysis of the data set we used for today’s challenge.</p>
+</body>
+</html>
