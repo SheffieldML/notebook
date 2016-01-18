@@ -1,0 +1,9 @@
+*.zip
+*.ipynb_checkpoints
+*.pickle 
+*.mat
+*.pyc
+*.log
+lab_classes/ambassadors/ods-master
+lab_classes/machine_learning/ods-master
+teaching/csmath/tutorial/build
