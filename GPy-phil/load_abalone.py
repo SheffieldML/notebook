@@ -20,7 +20,8 @@ if not os.path.exists(dataname):
                 start_reading = True
     data.columns = columns
     data.to_pickle('abalone.pickle')
-    os.removedirs('abalone')
-    os.remove(filename)
+    shutil.rmtree('abalone')
+    if os.path.exists(filename):
+        os.remove(filename)
 else:
     data = pd.read_pickle('abalone.pickle')
