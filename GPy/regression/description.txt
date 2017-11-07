@@ -1,0 +1,1 @@
+Prediction of a continuous variable given a set of observations. Assumes the likelihood of an observation is Gaussian, given the latent function.
