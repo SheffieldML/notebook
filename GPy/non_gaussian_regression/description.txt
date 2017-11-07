@@ -1,0 +1,1 @@
+Predictions for problems in which the likelihood function is non-Gaussian. For example classification (which has a Bernoulli likelihood function).
