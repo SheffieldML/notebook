@@ -1,0 +1,1 @@
+For when you have more than one output dimension. These models allow two outputs to help predict one-another.
