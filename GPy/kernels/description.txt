@@ -1,0 +1,1 @@
+GPs rely on describing how different inputs are correlated. Kernels are how we do that.
