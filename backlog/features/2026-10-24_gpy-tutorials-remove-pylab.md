@@ -1,7 +1,7 @@
 ---
 id: "2026-10-24_gpy-tutorials-remove-pylab"
 title: "Replace pylab in GPy tutorials with matplotlib.pyplot"
-status: "In Progress"
+status: "Completed"
 priority: "Medium"
 created: "2026-10-24"
 last_updated: "2026-10-24"
@@ -26,9 +26,9 @@ Remove `pylab`, `%pylab inline`, and `%matplotlib inline` from `GPy/*.ipynb`. Us
 
 ## Acceptance Criteria
 
-- [ ] No `pylab` or `%matplotlib` in `GPy/*.ipynb`
-- [ ] `sampling_hmc.ipynb` uses `np` / `plt` instead of `from pylab import *`
-- [ ] CIP-0003 execute still passes
+- [x] No `pylab` or `%matplotlib` in `GPy/*.ipynb`
+- [x] `sampling_hmc.ipynb` uses `np` / `plt` instead of `from pylab import *`
+- [x] CIP-0003 execute still passes
 
 ## Implementation Notes
 
@@ -45,3 +45,5 @@ Do not add `%matplotlib inline`. GPy `plotting_library().figure` / `show` calls 
 ### 2026-10-24
 
 Task created as In Progress after CIP-0005 was accepted.
+
+Replaced pylab with pyplot, removed matplotlib inline magics, and added `import numpy as np` in the coregionalized tutorial (it previously came from `%pylab`). Local execute: 19 passed.

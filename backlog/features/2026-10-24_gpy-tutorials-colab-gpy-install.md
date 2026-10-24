@@ -1,7 +1,7 @@
 ---
 id: "2026-10-24_gpy-tutorials-colab-gpy-install"
 title: "Install GPy from tutorial notebooks when it is missing"
-status: "In Progress"
+status: "Completed"
 priority: "Medium"
 created: "2026-10-24"
 last_updated: "2026-10-24"
@@ -26,9 +26,9 @@ Insert a first code cell in each executable `GPy/*.ipynb` that imports GPy if pr
 
 ## Acceptance Criteria
 
-- [ ] Canonical ensure-GPy cell is the first code cell in each executable GPy tutorial
-- [ ] Extra ensure lines for pods / seaborn / ipywidgets where needed
-- [ ] CIP-0003 execute stays green (import-hit path; no pip in CI)
+- [x] Canonical ensure-GPy cell is the first code cell in each executable GPy tutorial
+- [x] Extra ensure lines for pods / seaborn / ipywidgets where needed
+- [x] CIP-0003 execute stays green (import-hit path; no pip in CI)
 
 ## Implementation Notes
 
@@ -45,3 +45,5 @@ Use `subprocess` + `sys.executable`, not `%pip`. Do not upgrade an already-impor
 ### 2026-10-24
 
 Task created as In Progress after CIP-0006 was accepted.
+
+Inserted the ensure-GPy cell (plus pods/seaborn/ipywidgets where needed). Local execute: 19 passed (import-hit path).
