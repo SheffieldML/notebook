@@ -1,7 +1,7 @@
 ---
 id: "2026-10-24_gpy-tutorials-numpy-matplotlib-config"
 title: "Fix NumPy 2, matplotlib fmt, config.ipynb, and climin guards"
-status: "Ready"
+status: "Completed"
 priority: "High"
 created: "2026-10-24"
 last_updated: "2026-10-24"
@@ -33,10 +33,10 @@ Finish the CIP-0001 cell-content port beyond print/xrange:
 
 ## Acceptance Criteria
 
-- [ ] Integral and Poisson notebooks format/cast scalars via `.item()` (or equivalent)
-- [ ] Heteroscedastic `errorbar` uses `fmt="none"`
-- [ ] `config.ipynb` has no INI in code cells
-- [ ] Missing `climin` raises a clear ImportError naming the extra in both climin notebooks
+- [x] Integral and Poisson notebooks format/cast scalars via `.item()` (or equivalent)
+- [x] Heteroscedastic `errorbar` uses `fmt="none"`
+- [x] `config.ipynb` has no INI in code cells
+- [x] Missing `climin` raises a clear ImportError naming the extra in both climin notebooks
 
 ## Implementation Notes
 
@@ -53,3 +53,5 @@ Do not add climin as a hard dependency. Skip policy for CI is CIP-0003.
 ### 2026-10-24
 
 Task created as Ready after CIP-0001 was accepted.
+
+Applied `.item()` in Integral and Poisson tutorials, `fmt="none"` in heteroscedastic errorbars, moved `config.ipynb` INI samples to markdown, and guarded `import climin` in SVI and optimizer notebooks. Also dropped a leftover indented fragment in `SVI.ipynb` so that plotting cell parses.

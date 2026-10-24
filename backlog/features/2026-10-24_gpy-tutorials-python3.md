@@ -1,7 +1,7 @@
 ---
 id: "2026-10-24_gpy-tutorials-python3"
 title: "Port GPy tutorial cells to Python 3 print/xrange and python3 kernelspec"
-status: "Ready"
+status: "Completed"
 priority: "High"
 created: "2026-10-24"
 last_updated: "2026-10-24"
@@ -28,9 +28,9 @@ Notebooks with Python 2 `print` / `xrange` (CIP-0001 inventory): `GPyCrashCourse
 
 ## Acceptance Criteria
 
-- [ ] No code cell in `GPy/*.ipynb` uses Python 2 `print` or `xrange`
-- [ ] Every `GPy/*.ipynb` kernelspec name is `python3`
-- [ ] Teaching markdown is unchanged except where it quotes the old `print` syntax as a command to type
+- [x] No code cell in `GPy/*.ipynb` uses Python 2 `print` or `xrange`
+- [x] Every `GPy/*.ipynb` kernelspec name is `python3`
+- [x] Teaching markdown is unchanged except where it quotes the old `print` syntax as a command to type
 
 ## Implementation Notes
 
@@ -47,3 +47,5 @@ Mechanical port only. IPython magics (`%matplotlib`, `%pylab`, `?` help) must be
 ### 2026-10-24
 
 Task created as Ready after CIP-0001 was accepted.
+
+Converted `print` / `xrange` with lib2to3 (IPython magics preserved) and set kernelspec to `python3` on every `GPy/*.ipynb`. Code cells parse as Python 3.
