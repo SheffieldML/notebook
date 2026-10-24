@@ -1,7 +1,7 @@
 ---
 id: "2026-10-24_gpy-tutorials-ci-runner"
 title: "Add nbclient runner and GitHub Actions for GPy tutorials"
-status: "In Progress"
+status: "Completed"
 priority: "High"
 created: "2026-10-24"
 last_updated: "2026-10-24"
@@ -25,7 +25,7 @@ tags:
 
 ## Description
 
-Add `scripts/run_gpy_tutorials.sh` (nbclient, `MPLBACKEND=Agg`, per-notebook timeout, climin skip policy) and a GitHub Actions workflow: Python 3.12, install GPy pinned to the 1.15.0 candidate (`gpy==1.15.0` once published; until then `release/1.15.0` or the #1235 SHA) plus `gpy[plotting]`, Jupyter (`nbclient`, `ipykernel`). Upload executed notebooks on failure. Point the README GPy tutorial section at the workflow badge.
+Add `scripts/run_gpy_tutorials.sh` (nbclient, `MPLBACKEND=Agg`, per-notebook timeout, climin skip policy) and a GitHub Actions workflow: Python 3.11, install GPy pinned to `gpy[plotting]==1.15.0` plus Jupyter (`nbclient`, `ipykernel`). Upload executed notebooks on failure. Point the README GPy tutorial section at the workflow badge. A second `execute-latest` job installs unpinned `gpy[plotting]`.
 
 Skip `SVI.ipynb` and `optimizer-implementation.ipynb` when climin is not installed, with the skip documented. `index.ipynb` has no required code. Fail the job if a required notebook raises.
 
@@ -35,6 +35,8 @@ Skip `SVI.ipynb` and `optimizer-implementation.ipynb` when climin is not install
 - [x] GitHub Actions workflow pins GPy and runs the script on this repository
 - [x] README GPy tutorial section shows the workflow badge
 - [x] Job does not use Plotly Cloud credentials
+- [x] `execute` installs `gpy[plotting]==1.15.0` from PyPI
+- [x] `execute-latest` installs current PyPI `gpy[plotting]`
 
 ## Implementation Notes
 
@@ -52,4 +54,4 @@ Run with cwd such that `import GPy` resolves the library, not this repo's `GPy/`
 
 Task created as Ready after CIP-0003 was accepted.
 
-Added `scripts/run_gpy_tutorials.py` / `.sh` and `.github/workflows/gpy-tutorials.yml` (Python 3.12, GPy from SheffieldML/GPy#1235, climin skip). Local execute against the installed GPy passed required notebooks (climin pair skipped). First Actions green run is still pending.
+Added `scripts/run_gpy_tutorials.py` / `.sh` and `.github/workflows/gpy-tutorials.yml` (Python 3.11, climin required). PR #24 `execute` went green against the GPy 1.15.0 git candidate. After v1.15.0 on PyPI, pin `execute` to `gpy[plotting]==1.15.0` and restore `execute-latest`. Marked Completed.
