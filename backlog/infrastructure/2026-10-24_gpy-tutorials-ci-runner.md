@@ -1,7 +1,7 @@
 ---
 id: "2026-10-24_gpy-tutorials-ci-runner"
 title: "Add nbclient runner and GitHub Actions for GPy tutorials"
-status: "Ready"
+status: "In Progress"
 priority: "High"
 created: "2026-10-24"
 last_updated: "2026-10-24"
@@ -31,10 +31,10 @@ Skip `SVI.ipynb` and `optimizer-implementation.ipynb` when climin is not install
 
 ## Acceptance Criteria
 
-- [ ] Runner script executes `GPy/*.ipynb` with documented climin skip
-- [ ] GitHub Actions workflow pins GPy and runs the script on this repository
-- [ ] README GPy tutorial section shows the workflow badge
-- [ ] Job does not use Plotly Cloud credentials
+- [x] Runner script executes `GPy/*.ipynb` with documented climin skip
+- [x] GitHub Actions workflow pins GPy and runs the script on this repository
+- [x] README GPy tutorial section shows the workflow badge
+- [x] Job does not use Plotly Cloud credentials
 
 ## Implementation Notes
 
@@ -51,3 +51,5 @@ Run with cwd such that `import GPy` resolves the library, not this repo's `GPy/`
 ### 2026-10-24
 
 Task created as Ready after CIP-0003 was accepted.
+
+Added `scripts/run_gpy_tutorials.py` / `.sh` and `.github/workflows/gpy-tutorials.yml` (Python 3.12, GPy from SheffieldML/GPy#1235, climin skip). Local execute against the installed GPy passed required notebooks (climin pair skipped). First Actions green run is still pending.
