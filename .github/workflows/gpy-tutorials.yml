@@ -1,0 +1,76 @@
+# Execute GPy/*.ipynb against a pinned GPy (CIP-0003).
+#
+# GPy pin: 1.15.0 candidate (SheffieldML/GPy#1235, branch release/1.15.0).
+# Switch the install line to `gpy==1.15.0` once that release is on PyPI.
+# Do not float on GPy devel for the release-gate job.
+#
+# East Timor in GPyCrashCourse is loaded from datasets_mirror (PyPI pods 0.1.18
+# does not yet ship pods.datasets.east_timor).
+#
+# Python 3.11: climin 0.1a1 still imports the removed stdlib module `imp`.
+# pods first-time downloads are authorized in the runner (no stdin in nbclient).
+#
+# climin is installed so SVI.ipynb and optimizer-implementation.ipynb are
+# required (CIP-0003 skip only applies when the extra is absent).
+#
+# Do not add a "latest PyPI GPy" job until 1.15.0 is published. Current PyPI
+# is 1.14.2; these notebooks target 1.15, and GitHub still paints
+# continue-on-error jobs as failing checks.
+name: GPy tutorials
+
+on:
+  push:
+    branches: [master, main]
+    paths:
+      - "GPy/**"
+      - "scripts/run_gpy_tutorials.py"
+      - "scripts/run_gpy_tutorials.sh"
+      - ".github/workflows/gpy-tutorials.yml"
+  pull_request:
+    paths:
+      - "GPy/**"
+      - "scripts/run_gpy_tutorials.py"
+      - "scripts/run_gpy_tutorials.sh"
+      - ".github/workflows/gpy-tutorials.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  execute:
+    runs-on: ubuntu-latest
+    timeout-minutes: 90
+    env:
+      MPLBACKEND: Agg
+      MPLCONFIGDIR: ${{ github.workspace }}/.mplconfig
+      PYTHONUNBUFFERED: "1"
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install GPy 1.15.0 candidate, plotting, Jupyter
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install "gpy[plotting] @ git+https://github.com/SheffieldML/GPy.git@refs/pull/1235/head"
+          python -m pip install nbclient ipykernel jupyter_client ipywidgets pods seaborn pandas climin
+          python -c "import GPy, climin; print('GPy', getattr(GPy, '__version__', '?')); print('climin', climin.__file__)"
+
+      - name: Register kernel
+        run: python -m ipykernel install --user --name python3
+
+      - name: Execute GPy tutorials
+        run: bash scripts/run_gpy_tutorials.sh --output-dir executed-gpy
+
+      - name: Upload executed notebooks
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: executed-gpy-notebooks
+          path: executed-gpy/
+          if-no-files-found: ignore

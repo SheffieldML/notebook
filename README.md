@@ -9,7 +9,7 @@ We have split the notebooks into groups.
 
 [Computational Biology Notebooks](http://nbviewer.ipython.org/github/SheffieldML/notebook/blob/master/compbio/index.ipynb) Give some examples of work completed in different projects and implemented in GPy. 
 
-[GPy Tutorial Notebooks](http://nbviewer.ipython.org/github/SheffieldML/notebook/blob/master/GPy/index.ipynb) These notebooks give short tutorials on various features of GPy.
+[GPy Tutorial Notebooks](http://nbviewer.ipython.org/github/SheffieldML/notebook/blob/master/GPy/index.ipynb) These notebooks give short tutorials on various features of GPy. [![GPy tutorials](https://github.com/SheffieldML/notebook/actions/workflows/gpy-tutorials.yml/badge.svg)](https://github.com/SheffieldML/notebook/actions/workflows/gpy-tutorials.yml) Each of these tutorials has an Open in Colab badge. Their executed outputs are stripped on commit (`pre-commit install` after [pre-commit](https://pre-commit.com/) is available).
 
 [Lab Classes](http://nbviewer.ipython.org/github/SheffieldML/notebook/blob/master/lab_classes/index.ipynb) Gives a summary of notebooks that have been used in lab classes for teaching using our software. They include notebooks for undergraduate, postgraduate and summer school courses on Gaussian processes and machine learning.
 
