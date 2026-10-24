@@ -1,7 +1,7 @@
 ---
 id: "2026-10-24_gpy-plotly-upstream-issue"
 title: "File GPy issue for Plotly online iplot and string marker sizes"
-status: "Ready"
+status: "Completed"
 priority: "Medium"
 created: "2026-10-24"
 last_updated: "2026-10-24"
@@ -32,8 +32,8 @@ Link the issue from CIP-0002. Do not patch GPy from this repository.
 
 ## Acceptance Criteria
 
-- [ ] GitHub issue exists on SheffieldML/GPy covering iplot and string marker sizes
-- [ ] CIP-0002 References section links to that issue
+- [x] GitHub issue exists on SheffieldML/GPy covering iplot and string marker sizes
+- [x] CIP-0002 References section links to that issue
 
 ## Implementation Notes
 
@@ -42,6 +42,7 @@ Track as a GPy issue or CIP against SheffieldML/GPy. Notebook-side workaround is
 ## Related
 
 - CIP: 0002
+- Issue: [SheffieldML/GPy#1243](https://github.com/SheffieldML/GPy/issues/1243)
 - PRs:
 - Documentation: SheffieldML/GPy plotting backends
 
@@ -50,3 +51,5 @@ Track as a GPy issue or CIP against SheffieldML/GPy. Notebook-side workaround is
 ### 2026-10-24
 
 Task created as Ready after CIP-0002 was accepted.
+
+Opened https://github.com/SheffieldML/GPy/issues/1243 and linked it from CIP-0002.

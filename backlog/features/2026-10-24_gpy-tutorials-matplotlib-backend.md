@@ -1,7 +1,7 @@
 ---
 id: "2026-10-24_gpy-tutorials-matplotlib-backend"
 title: "Switch GPy tutorial plotting from Plotly online to matplotlib"
-status: "Ready"
+status: "Completed"
 priority: "High"
 created: "2026-10-24"
 last_updated: "2026-10-24"
@@ -27,9 +27,9 @@ In `basic_gp.ipynb`, `models_basic.ipynb`, and `MagnificationFactor.ipynb`, repl
 
 ## Acceptance Criteria
 
-- [ ] No `GPy/*.ipynb` cell calls `change_plotting_library('plotly')`
-- [ ] The three named notebooks select matplotlib
-- [ ] Nearby markdown does not tell readers to use Plotly Cloud / Chart Studio
+- [x] No `GPy/*.ipynb` cell calls `change_plotting_library('plotly')`
+- [x] The three named notebooks select matplotlib
+- [x] Nearby markdown does not tell readers to use Plotly Cloud / Chart Studio
 
 ## Implementation Notes
 
@@ -46,3 +46,5 @@ Do not patch GPy from this repository. GPy-side `plotly.plotly.iplot` and string
 ### 2026-10-24
 
 Task created as Ready after CIP-0002 was accepted.
+
+Switched `basic_gp.ipynb`, `models_basic.ipynb`, and `MagnificationFactor.ipynb` from `'plotly'` to `'matplotlib'`. No tutorial markdown required Chart Studio.
