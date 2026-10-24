@@ -76,11 +76,25 @@ def main() -> int:
         return 1
 
     have_climin = climin_available()
+    # Import GPy with the notebook directory as cwd so this folder does not shadow the library.
+    import subprocess
+
+    try:
+        gpy_info = subprocess.check_output(
+            [
+                sys.executable,
+                "-c",
+                "import GPy; print(getattr(GPy, '__version__', '?'), GPy.__file__)",
+            ],
+            cwd=str(TUTORIAL_DIR),
+            text=True,
+        ).strip()
+    except Exception as exc:  # pragma: no cover - environment misconfigured
+        gpy_info = f"unavailable ({exc})"
+    print(f"python: {sys.executable}", flush=True)
+    print(f"GPy: {gpy_info}", flush=True)
     print(f"climin installed: {have_climin}", flush=True)
-    print(
-        f"GPy pin check happens in the environment; executing {len(notebooks)} notebooks",
-        flush=True,
-    )
+    print(f"executing {len(notebooks)} notebooks", flush=True)
 
     failed: list[str] = []
     skipped: list[str] = []

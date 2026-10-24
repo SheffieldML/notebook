@@ -2,10 +2,16 @@
 #
 # GPy pin: 1.15.0 candidate (SheffieldML/GPy#1235, branch release/1.15.0).
 # Switch the install line to `gpy==1.15.0` once that release is on PyPI.
-# Do not float on GPy devel.
+# Do not float on GPy devel for the release-gate job.
 #
-# climin is not installed here: SVI.ipynb and optimizer-implementation.ipynb
-# are skipped by scripts/run_gpy_tutorials.py (optional extra).
+# East Timor in GPyCrashCourse is loaded from datasets_mirror (PyPI pods 0.1.18
+# does not yet ship pods.datasets.east_timor).
+#
+# climin is installed so SVI.ipynb and optimizer-implementation.ipynb are
+# required (CIP-0003 skip only applies when the extra is absent).
+#
+# execute-latest is a second job against current PyPI GPy. It is not the 1.15
+# release gate; keep that pin in execute.
 name: GPy tutorials
 
 on:
@@ -48,7 +54,7 @@ jobs:
         run: |
           python -m pip install --upgrade pip
           python -m pip install "gpy[plotting] @ git+https://github.com/SheffieldML/GPy.git@refs/pull/1235/head"
-          python -m pip install nbclient ipykernel jupyter_client ipywidgets pods seaborn pandas
+          python -m pip install nbclient ipykernel jupyter_client ipywidgets pods seaborn pandas climin
           python -c "import GPy; print('GPy', getattr(GPy, '__version__', '?'))"
 
       - name: Register kernel
@@ -63,4 +69,44 @@ jobs:
         with:
           name: executed-gpy-notebooks
           path: executed-gpy/
+          if-no-files-found: ignore
+
+  execute-latest:
+    # Informational: current PyPI GPy, not the 1.15 release gate.
+    # continue-on-error keeps a latest-GPy regression from blocking 1.15.
+    continue-on-error: true
+    runs-on: ubuntu-latest
+    timeout-minutes: 90
+    env:
+      MPLBACKEND: Agg
+      MPLCONFIGDIR: ${{ github.workspace }}/.mplconfig
+      PYTHONUNBUFFERED: "1"
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install latest PyPI GPy, plotting, Jupyter
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install "gpy[plotting]"
+          python -m pip install nbclient ipykernel jupyter_client ipywidgets pods seaborn pandas climin
+          python -c "import GPy; print('GPy', getattr(GPy, '__version__', '?'))"
+
+      - name: Register kernel
+        run: python -m ipykernel install --user --name python3
+
+      - name: Execute GPy tutorials
+        run: bash scripts/run_gpy_tutorials.sh --output-dir executed-gpy-latest
+
+      - name: Upload executed notebooks
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: executed-gpy-latest-notebooks
+          path: executed-gpy-latest/
           if-no-files-found: ignore

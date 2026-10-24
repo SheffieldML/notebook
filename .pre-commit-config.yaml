@@ -1,0 +1,7 @@
+# Strip executed outputs from the GPy tutorial notebooks in this repo.
+repos:
+  - repo: https://github.com/kynan/nbstripout
+    rev: 0.9.1
+    hooks:
+      - id: nbstripout
+        files: ^GPy/.*\.ipynb$

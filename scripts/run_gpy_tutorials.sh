@@ -9,4 +9,6 @@ ROOT="$(cd "$(dirname "$0")/.." && pwd)"
 export MPLBACKEND="${MPLBACKEND:-Agg}"
 export PYTHONUNBUFFERED="${PYTHONUNBUFFERED:-1}"
 
-exec python3 "$ROOT/scripts/run_gpy_tutorials.py" "$@"
+# Prefer the caller's interpreter so a conda/venv env is used locally.
+PYTHON="${PYTHON:-python3}"
+exec "$PYTHON" "$ROOT/scripts/run_gpy_tutorials.py" "$@"
