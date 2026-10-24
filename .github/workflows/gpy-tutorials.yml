@@ -7,6 +7,9 @@
 # East Timor in GPyCrashCourse is loaded from datasets_mirror (PyPI pods 0.1.18
 # does not yet ship pods.datasets.east_timor).
 #
+# Python 3.11: climin 0.1a1 still imports the removed stdlib module `imp`.
+# pods first-time downloads are authorized in the runner (no stdin in nbclient).
+#
 # climin is installed so SVI.ipynb and optimizer-implementation.ipynb are
 # required (CIP-0003 skip only applies when the extra is absent).
 #
@@ -48,14 +51,14 @@ jobs:
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
-          python-version: "3.12"
+          python-version: "3.11"
 
       - name: Install GPy 1.15.0 candidate, plotting, Jupyter
         run: |
           python -m pip install --upgrade pip
           python -m pip install "gpy[plotting] @ git+https://github.com/SheffieldML/GPy.git@refs/pull/1235/head"
           python -m pip install nbclient ipykernel jupyter_client ipywidgets pods seaborn pandas climin
-          python -c "import GPy; print('GPy', getattr(GPy, '__version__', '?'))"
+          python -c "import GPy, climin; print('GPy', getattr(GPy, '__version__', '?')); print('climin', climin.__file__)"
 
       - name: Register kernel
         run: python -m ipykernel install --user --name python3
@@ -88,14 +91,14 @@ jobs:
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
-          python-version: "3.12"
+          python-version: "3.11"
 
       - name: Install latest PyPI GPy, plotting, Jupyter
         run: |
           python -m pip install --upgrade pip
           python -m pip install "gpy[plotting]"
           python -m pip install nbclient ipykernel jupyter_client ipywidgets pods seaborn pandas climin
-          python -c "import GPy; print('GPy', getattr(GPy, '__version__', '?'))"
+          python -c "import GPy, climin; print('GPy', getattr(GPy, '__version__', '?')); print('climin', climin.__file__)"
 
       - name: Register kernel
         run: python -m ipykernel install --user --name python3

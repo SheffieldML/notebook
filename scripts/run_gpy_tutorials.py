@@ -18,6 +18,16 @@ from pathlib import Path
 import nbformat
 from nbclient import NotebookClient
 from nbclient.exceptions import CellExecutionError
+from nbformat.v4 import new_code_cell
+
+# pods prompts on stdin for first-time dataset downloads. nbclient has no stdin.
+PODS_CI_PREAMBLE = """\
+try:
+    import pods.access as _pods_access
+    _pods_access.overide_manual_authorize = True
+except ImportError:
+    pass
+"""
 
 ROOT = Path(__file__).resolve().parents[1]
 TUTORIAL_DIR = ROOT / "GPy"
@@ -28,13 +38,15 @@ DEFAULT_TIMEOUT = 900
 def climin_available() -> bool:
     try:
         import climin  # noqa: F401
-    except ImportError:
+    except Exception as exc:
+        print(f"climin import failed: {type(exc).__name__}: {exc}", flush=True)
         return False
     return True
 
 
 def execute_notebook(path: Path, timeout: int, output_dir: Path | None) -> None:
     nb = nbformat.read(path, as_version=4)
+    nb.cells.insert(0, new_code_cell(PODS_CI_PREAMBLE))
     client = NotebookClient(
         nb,
         timeout=timeout,
