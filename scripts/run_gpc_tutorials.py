@@ -26,16 +26,22 @@ SKIP = frozenset({"index.ipynb"})
 DEFAULT_TIMEOUT = 900
 
 # Keep OpenBLAS single-threaded in CI / nbclient (GPc wheel docs).
-BLAS_PREAMBLE = """\
+# pods prompts on stdin for first-time dataset downloads; nbclient has no stdin.
+CI_PREAMBLE = """\
 import os
 os.environ.setdefault("OPENBLAS_NUM_THREADS", "1")
 os.environ.setdefault("OMP_NUM_THREADS", "1")
+try:
+    import pods.access as _pods_access
+    _pods_access.overide_manual_authorize = True
+except ImportError:
+    pass
 """
 
 
 def execute_notebook(path: Path, timeout: int, output_dir: Path | None) -> None:
     nb = nbformat.read(path, as_version=4)
-    nb.cells.insert(0, nbformat.v4.new_code_cell(BLAS_PREAMBLE))
+    nb.cells.insert(0, nbformat.v4.new_code_cell(CI_PREAMBLE))
     client = NotebookClient(
         nb,
         timeout=timeout,
