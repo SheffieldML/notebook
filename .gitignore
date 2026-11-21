@@ -4,6 +4,13 @@
 *.mat
 *.pyc
 *.log
+
+# Local GPc tutorial smoke (CIP-0007)
+.venv-gpc-smoke/
+.mplconfig/
+executed-gpc/
+executed-gpc-local/
+executed-gpc-*/
 lab_classes/ambassadors/ods-master
 lab_classes/machine_learning/ods-master
 teaching/csmath/tutorial/build

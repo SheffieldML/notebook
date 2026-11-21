@@ -11,6 +11,8 @@ We have split the notebooks into groups.
 
 [GPy Tutorial Notebooks](http://nbviewer.ipython.org/github/SheffieldML/notebook/blob/master/GPy/index.ipynb) These notebooks give short tutorials on various features of GPy. [![GPy tutorials](https://github.com/SheffieldML/notebook/actions/workflows/gpy-tutorials.yml/badge.svg)](https://github.com/SheffieldML/notebook/actions/workflows/gpy-tutorials.yml) Each of these tutorials has an Open in Colab badge. Their executed outputs are stripped on commit (`pre-commit install` after [pre-commit](https://pre-commit.com/) is available).
 
+[GPc Tutorial Notebooks](./GPc/index.ipynb) Parallel ports for the [`gpc`](https://github.com/SheffieldML/GPc) Python façade ([CIP-0007](./cip/cip0007.md)). [![GPc tutorials](https://github.com/SheffieldML/notebook/actions/workflows/gpc-tutorials.yml/badge.svg)](https://github.com/SheffieldML/notebook/actions/workflows/gpc-tutorials.yml) Same checklist as the GPy tutorials; native C++ demos remain in the GPc repo.
+
 [Lab Classes](http://nbviewer.ipython.org/github/SheffieldML/notebook/blob/master/lab_classes/index.ipynb) Gives a summary of notebooks that have been used in lab classes for teaching using our software. They include notebooks for undergraduate, postgraduate and summer school courses on Gaussian processes and machine learning.
 
 See also the [notebooks associated with our open data science software repository](http://nbviewer.ipython.org/github/sods/ods/blob/master/notebooks/pods/index.ipynb).
