@@ -1,6 +1,6 @@
 # Execute GPc/*.ipynb against a pinned gpc wheel (CIP-0007).
 #
-# Pin: TestPyPI gpc==0.1.0a5 until the first PyPI release (GPc CIP-002C).
+# Pin: TestPyPI gpc==0.1.0a6 until the first PyPI release (GPc CIP-002C).
 # Keep --extra-index-url on real PyPI so NumPy resolves.
 #
 # Soft path filter: only GPc tree + this runner. workflow_dispatch always runs.
@@ -49,8 +49,8 @@ jobs:
           python -m pip install --no-cache-dir \
             --index-url https://test.pypi.org/simple/ \
             --extra-index-url https://pypi.org/simple/ \
-            "gpc==0.1.0a5"
-          python -m pip install nbclient ipykernel jupyter_client matplotlib pods
+            "gpc==0.1.0a6"
+          python -m pip install nbclient ipykernel jupyter_client matplotlib pods scipy
           python -c "import gpc; print('gpc', getattr(gpc, '__version__', '?'), gpc.__file__)"
           export OPENBLAS_NUM_THREADS=1
 
