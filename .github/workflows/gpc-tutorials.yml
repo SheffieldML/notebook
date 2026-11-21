@@ -43,14 +43,14 @@ jobs:
         with:
           python-version: "3.11"
 
-      - name: Install gpc (TestPyPI alpha), matplotlib, Jupyter
+      - name: Install gpc (TestPyPI alpha), matplotlib, pods, Jupyter
         run: |
           python -m pip install --upgrade pip
           python -m pip install --no-cache-dir \
             --index-url https://test.pypi.org/simple/ \
             --extra-index-url https://pypi.org/simple/ \
             "gpc==0.1.0a5"
-          python -m pip install nbclient ipykernel jupyter_client matplotlib
+          python -m pip install nbclient ipykernel jupyter_client matplotlib pods
           python -c "import gpc; print('gpc', getattr(gpc, '__version__', '?'), gpc.__file__)"
           export OPENBLAS_NUM_THREADS=1
 

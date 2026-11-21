@@ -40,3 +40,5 @@ Set `OPENBLAS_NUM_THREADS=1` in Colab / CI as well.
 ## Subset status
 
 See [index.ipynb](./index.ipynb).
+
+Executable tutorials (CIP-0007 Phase B): `basic_gp`, `basic_kernels`, `sparse_gp_regression`, `olympic_marathon`, `mlp_olympic`, `expquad_regression`, `weightspace_ridge_1d`. Olympics notebooks need `pods` (installed in CI).
