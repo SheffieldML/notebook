@@ -5,6 +5,8 @@
 #
 # East Timor in GPyCrashCourse is loaded from datasets_mirror (PyPI pods 0.1.18
 # does not yet ship pods.datasets.east_timor).
+# f1_2011_qualifying_cutoff.ipynb falls back to datasets_mirror until pods
+# ships f1_2011_practice_qualifying (ods CIP-0005).
 #
 # Python 3.11: climin 0.1a1 still imports the removed stdlib module `imp`.
 # pods first-time downloads are authorized in the runner (no stdin in nbclient).
