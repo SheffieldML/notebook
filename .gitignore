@@ -69,6 +69,7 @@ tenets/combine_tenets.py
 docs/whats_next_script.md
 docs/yaml_frontmatter_examples.md
 
-# Local F1 skew notebook smoke env / executed copy
+# Local F1 notebook smoke env / executed copies
 .venv-f1-skew/
 GPy/f1_2011_skew_qualifying.executed.ipynb
+GPy/f1_2011_qualifying_cutoff.executed.ipynb
