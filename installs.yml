@@ -1,0 +1,42 @@
+# Central install specs for tutorial / CI environments.
+# Switch default sources here instead of editing workflow files or notebooks.
+#
+# Usage:
+#   python scripts/install_from_yaml.py --profile gpy-tutorials
+#   python scripts/install_from_yaml.py --profile gpy-tutorials-latest --dry-run
+#
+# After ods CIP-0005 lands on PyPI, change the pods specs below from the git
+# URL back to a PyPI pin (e.g. pods>=0.1.20).
+
+default_profile: gpy-tutorials
+
+profiles:
+  gpy-tutorials:
+    description: >
+      Pinned GPy release gate. pods from ods CIP-0005 branch until the
+      f1_2011_practice_qualifying loader is on PyPI.
+    packages:
+      GPy: "gpy[plotting]==1.15.0"
+      pods: "git+https://github.com/lawrennd/ods.git@cip0005-f1-practice-qualifying"
+      nbclient: nbclient
+      ipykernel: ipykernel
+      jupyter_client: jupyter_client
+      ipywidgets: ipywidgets
+      seaborn: seaborn
+      pandas: pandas
+      climin: climin
+
+  gpy-tutorials-latest:
+    description: >
+      Unpinned GPy canary. Same pods source as gpy-tutorials until CIP-0005
+      is released.
+    packages:
+      GPy: "gpy[plotting]"
+      pods: "git+https://github.com/lawrennd/ods.git@cip0005-f1-practice-qualifying"
+      nbclient: nbclient
+      ipykernel: ipykernel
+      jupyter_client: jupyter_client
+      ipywidgets: ipywidgets
+      seaborn: seaborn
+      pandas: pandas
+      climin: climin
