@@ -1,0 +1,62 @@
+# Consumer install profiles for tutorial / CI environments.
+#
+# Default package sources live in lamd's shared catalog (CIP-001C / notebook
+# CIP-0008):
+#   https://raw.githubusercontent.com/lawrennd/lamd/main/lamd/installs/packages.yml
+#
+# Resolution per package name:
+#   profile pins > overrides.packages > catalog > bare name
+#
+# Usage:
+#   python scripts/install_from_yaml.py --profile gpy-tutorials
+#   python scripts/install_from_yaml.py --profile gpy-tutorials-latest --dry-run
+#
+# Offline / against a local lamd checkout:
+#   export LAMD_PACKAGES_YML=/path/to/lamd/lamd/installs/packages.yml
+# or set catalog.local below.
+
+catalog:
+  url: https://raw.githubusercontent.com/lawrennd/lamd/main/lamd/installs/packages.yml
+  # local: ../lamd/lamd/installs/packages.yml
+
+# Temporary until ods CIP-0005 is on the default catalog / PyPI.
+overrides:
+  packages:
+    pods: git+https://github.com/lawrennd/ods.git@cip0005-f1-practice-qualifying
+
+default_profile: gpy-tutorials
+
+profiles:
+  gpy-tutorials:
+    description: >
+      Pinned GPy release gate. pods override points at ods CIP-0005 until that
+      loader is on the shared catalog / PyPI.
+    packages:
+      - GPy
+      - pods
+      - nbclient
+      - ipykernel
+      - jupyter_client
+      - ipywidgets
+      - seaborn
+      - pandas
+      - climin
+    pins:
+      GPy: "gpy[plotting]==1.15.0"
+
+  gpy-tutorials-latest:
+    description: >
+      Unpinned GPy canary. Same pods override as gpy-tutorials until CIP-0005
+      is released.
+    packages:
+      - GPy
+      - pods
+      - nbclient
+      - ipykernel
+      - jupyter_client
+      - ipywidgets
+      - seaborn
+      - pandas
+      - climin
+    pins:
+      GPy: "gpy[plotting]"

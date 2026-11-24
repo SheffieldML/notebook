@@ -3,8 +3,12 @@
 # GPy pin: 1.15.0 on PyPI (SheffieldML/GPy#1235 merged, v1.15.0).
 # Do not float on GPy devel for the release-gate job.
 #
-# East Timor in GPyCrashCourse is loaded from datasets_mirror (PyPI pods 0.1.18
-# does not yet ship pods.datasets.east_timor).
+# Default package sources: lamd shared catalog (lawrennd/lamd CIP-001C).
+# This repo's installs.yml holds profiles, pins, and temporary overrides
+# (scripts/install_from_yaml.py). Switch pods/GPy there — not in this workflow.
+#
+# East Timor in GPyCrashCourse is loaded from datasets_mirror (older PyPI pods
+# builds may not yet ship pods.datasets.east_timor).
 #
 # Python 3.11: climin 0.1a1 still imports the removed stdlib module `imp`.
 # pods first-time downloads are authorized in the runner (no stdin in nbclient).
@@ -12,8 +16,7 @@
 # climin is installed so SVI.ipynb and optimizer-implementation.ipynb are
 # required (CIP-0003 skip only applies when the extra is absent).
 #
-# execute-latest installs current PyPI GPy without a version pin. It matches
-# execute while 1.15.0 is latest, and becomes a canary after the next release.
+# execute-latest uses profile gpy-tutorials-latest (unpinned GPy).
 name: GPy tutorials
 
 on:
@@ -21,12 +24,16 @@ on:
     branches: [master, main]
     paths:
       - "GPy/**"
+      - "installs.yml"
+      - "scripts/install_from_yaml.py"
       - "scripts/run_gpy_tutorials.py"
       - "scripts/run_gpy_tutorials.sh"
       - ".github/workflows/gpy-tutorials.yml"
   pull_request:
     paths:
       - "GPy/**"
+      - "installs.yml"
+      - "scripts/install_from_yaml.py"
       - "scripts/run_gpy_tutorials.py"
       - "scripts/run_gpy_tutorials.sh"
       - ".github/workflows/gpy-tutorials.yml"
@@ -52,12 +59,11 @@ jobs:
         with:
           python-version: "3.11"
 
-      - name: Install GPy 1.15.0, plotting, Jupyter
+      - name: Install tutorial dependencies (installs.yml)
         run: |
-          python -m pip install --upgrade pip
-          python -m pip install "gpy[plotting]==1.15.0"
-          python -m pip install nbclient ipykernel jupyter_client ipywidgets pods seaborn pandas climin
-          python -c "import GPy, climin; print('GPy', getattr(GPy, '__version__', '?')); print('climin', climin.__file__)"
+          python -m pip install --upgrade pip pyyaml
+          python scripts/install_from_yaml.py --profile gpy-tutorials
+          python -c "import GPy, pods, climin; print('GPy', getattr(GPy, '__version__', '?')); print('pods', pods.__file__); print('f1 loader', hasattr(pods.datasets, 'f1_2011_practice_qualifying')); print('climin', climin.__file__)"
 
       - name: Register kernel
         run: python -m ipykernel install --user --name python3
@@ -89,12 +95,11 @@ jobs:
         with:
           python-version: "3.11"
 
-      - name: Install latest PyPI GPy, plotting, Jupyter
+      - name: Install tutorial dependencies (installs.yml latest)
         run: |
-          python -m pip install --upgrade pip
-          python -m pip install "gpy[plotting]"
-          python -m pip install nbclient ipykernel jupyter_client ipywidgets pods seaborn pandas climin
-          python -c "import GPy, climin; print('GPy', getattr(GPy, '__version__', '?')); print('climin', climin.__file__)"
+          python -m pip install --upgrade pip pyyaml
+          python scripts/install_from_yaml.py --profile gpy-tutorials-latest
+          python -c "import GPy, pods, climin; print('GPy', getattr(GPy, '__version__', '?')); print('pods', pods.__file__); print('f1 loader', hasattr(pods.datasets, 'f1_2011_practice_qualifying')); print('climin', climin.__file__)"
 
       - name: Register kernel
         run: python -m ipykernel install --user --name python3
