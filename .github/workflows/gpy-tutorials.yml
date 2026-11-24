@@ -3,8 +3,9 @@
 # GPy pin: 1.15.0 on PyPI (SheffieldML/GPy#1235 merged, v1.15.0).
 # Do not float on GPy devel for the release-gate job.
 #
-# Package pins live in installs.yml (scripts/install_from_yaml.py). Switch pods
-# / GPy sources there — not in this workflow.
+# Default package sources: lamd shared catalog (lawrennd/lamd CIP-001C).
+# This repo's installs.yml holds profiles, pins, and temporary overrides
+# (scripts/install_from_yaml.py). Switch pods/GPy there — not in this workflow.
 #
 # East Timor in GPyCrashCourse is loaded from datasets_mirror (older PyPI pods
 # builds may not yet ship pods.datasets.east_timor).
