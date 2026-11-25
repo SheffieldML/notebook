@@ -73,3 +73,6 @@ docs/yaml_frontmatter_examples.md
 .venv-f1-skew/
 GPy/f1_2011_skew_qualifying.executed.ipynb
 GPy/f1_2011_qualifying_cutoff.executed.ipynb
+
+# Local HMC façade smoke tree (not for commit)
+.gpc_hmc_smoke/
