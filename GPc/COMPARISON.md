@@ -10,7 +10,7 @@ For each pair, ask:
 2. **API map** — Is every GPy call either mirrored, aliased, or explicitly deferred with a one-line reason?
 3. **Sign / objective** — Is `objective()` (= −log Z / −log-likelihood) called out wherever GPy prints `log_likelihood`?
 4. **Plots** — Where GPy uses `m.plot` / `m.plot_f` / `fixed_inputs`, does GPc show the same quantity with matplotlib / `plot_1d` / `predict_noiseless`?
-5. **Scope honesty** — Deferred features (sparse EP, `optimize_restarts`, HMC, hetero) named once, not silently dropped mid-story.
+5. **Scope honesty** — Deferred features (sparse EP, `optimize_restarts`, hetero, `infer_newX`) named once, not silently dropped mid-story.
 
 Severity:
 
@@ -34,6 +34,7 @@ Severity:
 | (GPy `gplvm_oil_100` / `BayesianGPLVM`; not in this repo) | `gplvm_oil100` / `bgplvm_oil100` | 2 | Reviewed vs native docs; narrative patch applied 2026-11-25 |
 | (GPy `MRD` / DeepGP libs; not in this repo) | `mrd_toy`, `deepgp_sinc` | 2 | Reviewed vs native docs; narrative patch applied 2026-11-25 |
 | Olympics / MLP / ExpQuad / weight-space | matching `GPc/*` | 3 | Reviewed; narrative patch applied 2026-11-25 |
+| `sampling_hmc.ipynb` | `sampling_hmc.ipynb` | 4 | Ported 2026-11-25 (CIP-003B / a11); `infer_newX` deferred |
 
 ## Wave 1 findings (2026-11-25)
 
@@ -65,7 +66,7 @@ Markdown ~46% of GPy length. Code path is fine (EP + Laplace + `predict_proba`);
 | EP interleaved with hyperparameter optimisation not explained | **gap** | Add short paragraph before/after first `optimize` |
 | No mention that Laplace is the other classic approx (GPy points to it; we already run it) | **gap** | Tie Laplace section back to that sentence |
 | Density / `plot_f` fine-grain Bernoulli surprise plot | **defer** | Optional later; not required for v1 |
-| MCMC for kernel params | **defer** | Out of subset |
+| MCMC for kernel params | **ok-short** | See `sampling_hmc` (Wave 4); not repeated here |
 
 ### `poisson_regression` — API ok, story compressed hard
 
