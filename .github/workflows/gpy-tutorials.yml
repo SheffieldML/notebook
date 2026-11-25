@@ -1,7 +1,7 @@
 # Execute GPy/*.ipynb against a pinned GPy (CIP-0003).
 #
-# GPy pin: 1.15.0 on PyPI (SheffieldML/GPy#1235 merged, v1.15.0).
-# Do not float on GPy devel for the release-gate job.
+# GPy pin: SheffieldML/GPy main until CIP-0014 (SkewGaussian) ships on PyPI
+# (see installs.yml). Revert to a PyPI pin after the next GPy release.
 #
 # Default package sources: lamd shared catalog (lawrennd/lamd CIP-001C).
 # This repo's installs.yml holds profiles, pins, and temporary overrides
