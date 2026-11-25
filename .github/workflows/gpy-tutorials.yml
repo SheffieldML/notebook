@@ -1,6 +1,6 @@
 # Execute GPy/*.ipynb against a pinned GPy (CIP-0003).
 #
-# GPy pin: SheffieldML/GPy main until CIP-0014 (SkewGaussian) ships on PyPI
+# GPy pin: SheffieldML/GPy main until CIP-0014 / #1331 ship on PyPI
 # (see installs.yml). Revert to a PyPI pin after the next GPy release.
 #
 # Default package sources: lamd shared catalog (lawrennd/lamd CIP-001C).

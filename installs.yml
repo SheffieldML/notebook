@@ -19,22 +19,23 @@ catalog:
   url: https://raw.githubusercontent.com/lawrennd/lamd/main/lamd/installs/packages.yml
   # local: ../lamd/lamd/installs/packages.yml
 
-# Temporary until GPy CIP-0014 / pods F1 loader are on the default catalog / PyPI.
+# Temporary until GPy #1331 / CIP-0014 / pods F1 loader are on PyPI.
 overrides:
   packages:
     # f1_2011_practice_qualifying is on ods main; not yet on PyPI pods.
     pods: "pods @ git+https://github.com/lawrennd/ods.git"
-    # CIP-0014 skew + infer_newX ndarray fix; not yet in PyPI 1.15.0.
-    GPy: "GPy[plotting] @ git+https://github.com/SheffieldML/GPy.git@fix/infer-newx-ndarray"
+    # GPy main: CIP-0014 skew, infer_newX ndarray fix, #1331 require_priors.
+    # Not yet in PyPI 1.15.0.
+    GPy: "GPy[plotting] @ git+https://github.com/SheffieldML/GPy.git@main"
 
 default_profile: gpy-tutorials
 
 profiles:
   gpy-tutorials:
     description: >
-      GPy from fix/infer-newx-ndarray (CIP-0014 skew + infer_newX ndarray fix) until merged/released.
-      pods override points at ods main until the F1 loader is on the shared
-      catalog / PyPI.
+      GPy from main (CIP-0014 skew, infer_newX ndarray fix, #1331 MCMC
+      require_priors) until the next PyPI release. pods override points at ods
+      main until the F1 loader is on the shared catalog / PyPI.
     packages:
       - GPy
       - pods
@@ -46,12 +47,12 @@ profiles:
       - pandas
       - climin
     pins:
-      GPy: "GPy[plotting] @ git+https://github.com/SheffieldML/GPy.git@fix/infer-newx-ndarray"
+      GPy: "GPy[plotting] @ git+https://github.com/SheffieldML/GPy.git@main"
 
   gpy-tutorials-latest:
     description: >
-      Unpinned GPy canary (also CIP-0014 main until skew ships on PyPI). Same
-      pods override as gpy-tutorials until the F1 loader is on PyPI.
+      Same GPy main canary as gpy-tutorials until a newer tip / PyPI release.
+      Same pods override until the F1 loader is on PyPI.
     packages:
       - GPy
       - pods
@@ -63,4 +64,4 @@ profiles:
       - pandas
       - climin
     pins:
-      GPy: "GPy[plotting] @ git+https://github.com/SheffieldML/GPy.git@fix/infer-newx-ndarray"
+      GPy: "GPy[plotting] @ git+https://github.com/SheffieldML/GPy.git@main"
