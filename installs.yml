@@ -24,7 +24,7 @@ overrides:
   packages:
     pods: git+https://github.com/lawrennd/ods.git@cip0005-f1-practice-qualifying
     # SkewGaussian (CIP-0014) is on GPy main; not yet in PyPI 1.15.0.
-    GPy: "git+https://github.com/SheffieldML/GPy.git#egg=gpy[plotting]"
+    GPy: "GPy[plotting] @ git+https://github.com/SheffieldML/GPy.git"
 
 default_profile: gpy-tutorials
 
@@ -45,7 +45,7 @@ profiles:
       - pandas
       - climin
     pins:
-      GPy: "git+https://github.com/SheffieldML/GPy.git#egg=gpy[plotting]"
+      GPy: "GPy[plotting] @ git+https://github.com/SheffieldML/GPy.git"
 
   gpy-tutorials-latest:
     description: >
@@ -62,4 +62,4 @@ profiles:
       - pandas
       - climin
     pins:
-      GPy: "git+https://github.com/SheffieldML/GPy.git#egg=gpy[plotting]"
+      GPy: "GPy[plotting] @ git+https://github.com/SheffieldML/GPy.git"
