@@ -24,15 +24,15 @@ overrides:
   packages:
     # f1_2011_practice_qualifying is on ods main; not yet on PyPI pods.
     pods: "pods @ git+https://github.com/lawrennd/ods.git"
-    # SkewGaussian (CIP-0014) is on GPy main; not yet in PyPI 1.15.0.
-    GPy: "GPy[plotting] @ git+https://github.com/SheffieldML/GPy.git"
+    # CIP-0014 skew + infer_newX ndarray fix; not yet in PyPI 1.15.0.
+    GPy: "GPy[plotting] @ git+https://github.com/SheffieldML/GPy.git@fix/infer-newx-ndarray"
 
 default_profile: gpy-tutorials
 
 profiles:
   gpy-tutorials:
     description: >
-      GPy from SheffieldML/GPy main (CIP-0014 skew) until the next PyPI release.
+      GPy from fix/infer-newx-ndarray (CIP-0014 skew + infer_newX ndarray fix) until merged/released.
       pods override points at ods main until the F1 loader is on the shared
       catalog / PyPI.
     packages:
@@ -46,7 +46,7 @@ profiles:
       - pandas
       - climin
     pins:
-      GPy: "GPy[plotting] @ git+https://github.com/SheffieldML/GPy.git"
+      GPy: "GPy[plotting] @ git+https://github.com/SheffieldML/GPy.git@fix/infer-newx-ndarray"
 
   gpy-tutorials-latest:
     description: >
@@ -63,4 +63,4 @@ profiles:
       - pandas
       - climin
     pins:
-      GPy: "GPy[plotting] @ git+https://github.com/SheffieldML/GPy.git"
+      GPy: "GPy[plotting] @ git+https://github.com/SheffieldML/GPy.git@fix/infer-newx-ndarray"
