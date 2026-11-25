@@ -24,7 +24,7 @@ bash scripts/run_gpc_tutorials.sh --output-dir executed-gpc-local
 ## Install
 
 Notebooks try `import gpc` and install from PyPI (TestPyPI alpha fallback) if missing.
-CI pins `gpc==0.1.0a8` from TestPyPI until the first PyPI release.
+CI pins `gpc==0.1.0a10` from TestPyPI until the first PyPI release.
 
 For a local editable build of GPc:
 
@@ -42,7 +42,7 @@ Set `OPENBLAS_NUM_THREADS=1` in Colab / CI as well.
 See [index.ipynb](./index.ipynb).
 
 Executable tutorials (CIP-0007): `basic_gp`, `basic_kernels`, `sparse_gp_regression`,
-`basic_classification`, `coregionalization_toy`, `gplvm_oil100`, `bgplvm_oil100`,
-`mrd_toy`, `deepgp_sinc`, `olympic_marathon`, `mlp_olympic`, `expquad_regression`,
-`weightspace_ridge_1d`. Olympics / oil notebooks need `pods` (installed in CI).
-DeepGP requires `gpc>=0.1.0a8`.
+`basic_classification`, `poisson_regression`, `coregionalization_toy`, `gplvm_oil100`,
+`bgplvm_oil100`, `mrd_toy`, `deepgp_sinc`, `olympic_marathon`, `mlp_olympic`,
+`expquad_regression`, `weightspace_ridge_1d`. Olympics / oil notebooks need `pods`
+(installed in CI). DeepGP / Poisson / `k.K` require `gpc>=0.1.0a10`.
