@@ -41,6 +41,8 @@ Set `OPENBLAS_NUM_THREADS=1` in Colab / CI as well.
 
 See [index.ipynb](./index.ipynb).
 
+GPy ↔ GPc review notes: [COMPARISON.md](./COMPARISON.md) (rubric + Wave findings; `scripts/compare_gpc_gpy_notebooks.py`).
+
 Executable tutorials (CIP-0007): `basic_gp`, `basic_kernels`, `sparse_gp_regression`,
 `basic_classification`, `poisson_regression`, `coregionalization_toy`, `gplvm_oil100`,
 `bgplvm_oil100`, `mrd_toy`, `deepgp_sinc`, `olympic_marathon`, `mlp_olympic`,
