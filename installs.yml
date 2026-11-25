@@ -19,10 +19,11 @@ catalog:
   url: https://raw.githubusercontent.com/lawrennd/lamd/main/lamd/installs/packages.yml
   # local: ../lamd/lamd/installs/packages.yml
 
-# Temporary until ods CIP-0005 / GPy CIP-0014 are on the default catalog / PyPI.
+# Temporary until GPy CIP-0014 / pods F1 loader are on the default catalog / PyPI.
 overrides:
   packages:
-    pods: git+https://github.com/lawrennd/ods.git@cip0005-f1-practice-qualifying
+    # f1_2011_practice_qualifying is on ods main; not yet on PyPI pods.
+    pods: "pods @ git+https://github.com/lawrennd/ods.git"
     # SkewGaussian (CIP-0014) is on GPy main; not yet in PyPI 1.15.0.
     GPy: "GPy[plotting] @ git+https://github.com/SheffieldML/GPy.git"
 
@@ -32,7 +33,7 @@ profiles:
   gpy-tutorials:
     description: >
       GPy from SheffieldML/GPy main (CIP-0014 skew) until the next PyPI release.
-      pods override points at ods CIP-0005 until that loader is on the shared
+      pods override points at ods main until the F1 loader is on the shared
       catalog / PyPI.
     packages:
       - GPy
@@ -50,7 +51,7 @@ profiles:
   gpy-tutorials-latest:
     description: >
       Unpinned GPy canary (also CIP-0014 main until skew ships on PyPI). Same
-      pods override as gpy-tutorials until CIP-0005 is released.
+      pods override as gpy-tutorials until the F1 loader is on PyPI.
     packages:
       - GPy
       - pods
