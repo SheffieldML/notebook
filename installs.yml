@@ -19,18 +19,21 @@ catalog:
   url: https://raw.githubusercontent.com/lawrennd/lamd/main/lamd/installs/packages.yml
   # local: ../lamd/lamd/installs/packages.yml
 
-# Temporary until ods CIP-0005 is on the default catalog / PyPI.
+# Temporary until ods CIP-0005 / GPy CIP-0014 are on the default catalog / PyPI.
 overrides:
   packages:
     pods: git+https://github.com/lawrennd/ods.git@cip0005-f1-practice-qualifying
+    # SkewGaussian (CIP-0014) is on GPy main; not yet in PyPI 1.15.0.
+    GPy: "git+https://github.com/SheffieldML/GPy.git#egg=gpy[plotting]"
 
 default_profile: gpy-tutorials
 
 profiles:
   gpy-tutorials:
     description: >
-      Pinned GPy release gate. pods override points at ods CIP-0005 until that
-      loader is on the shared catalog / PyPI.
+      GPy from SheffieldML/GPy main (CIP-0014 skew) until the next PyPI release.
+      pods override points at ods CIP-0005 until that loader is on the shared
+      catalog / PyPI.
     packages:
       - GPy
       - pods
@@ -42,12 +45,12 @@ profiles:
       - pandas
       - climin
     pins:
-      GPy: "gpy[plotting]==1.15.0"
+      GPy: "git+https://github.com/SheffieldML/GPy.git#egg=gpy[plotting]"
 
   gpy-tutorials-latest:
     description: >
-      Unpinned GPy canary. Same pods override as gpy-tutorials until CIP-0005
-      is released.
+      Unpinned GPy canary (also CIP-0014 main until skew ships on PyPI). Same
+      pods override as gpy-tutorials until CIP-0005 is released.
     packages:
       - GPy
       - pods
@@ -59,4 +62,4 @@ profiles:
       - pandas
       - climin
     pins:
-      GPy: "gpy[plotting]"
+      GPy: "git+https://github.com/SheffieldML/GPy.git#egg=gpy[plotting]"
